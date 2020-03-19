@@ -1,15 +1,5 @@
 import tweepy
-import logging
 from decouple import config
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-logfile_handler = logging.FileHandler('vTweet.log', mode='w')
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-logfile_handler.setFormatter(formatter)
-logger.addHandler(logfile_handler)
 
 # auth = tweepy.OAuthHandler(config('CONSUMER_KEY'), config('CONSUMER_SECRET'))
 
@@ -25,9 +15,7 @@ api = tweepy.API(auth)
 for tweet in tweepy.Cursor(api.search, q='Google').items(1):
     json_dict = tweet._json
     for key in json_dict.keys():
-        # logger.debug(key)
-        logger.debug(key)
-        logger.debug(json_dict[str(key)])
+        print(key, ":", json_dict[str(key)])
 
 for tweet in tweepy.Cursor(api.search, q='Google').items(10):
     # logger.debug(tweet._json)
@@ -51,3 +39,26 @@ ahd_trends = api.trends_place(id=str(ahd_woeid))
 ahd_trends = ahd_trends[0]['trends']  # Retrieve only the trends
 for trend in ahd_trends:
     print(trend['name'])
+
+# Filter search by location
+
+SF_LAT = 37.781157
+SF_LONG = -122.398720
+
+NY_LAT = 40.712776
+NY_LONG = -74.005974
+
+BENG_LAT = 12.971599
+BENG_LONG = 77.594566
+
+# May not work for Gujarati cities. Not enough people posting with location info
+
+geocode = str(BENG_LAT) + ',' + str(BENG_LONG) + ',1mi'
+
+for tweet in tweepy.Cursor(api.search, q='Corona', geocode=geocode).items(10):
+    json_dict = tweet._json
+    print(json_dict['text'])
+    try:
+        print(json_dict['place']['name'], '\n')
+    except TypeError:
+        print('No Location\n')
