@@ -36,3 +36,18 @@ for tweet in tweepy.Cursor(api.search, q='Google').items(10):
     # logger.debug(json_dict['id'])
     # logger.debug(json_dict['truncated'])
     # logger.debug(json_dict['text'])
+
+# GET trends/place demo
+
+AHD_LAT = 23.022505
+AHD_LONG = 72.571365
+
+# Returns a single element list
+ahd_loc_info = api.trends_closest(AHD_LAT, AHD_LONG)
+ahd_woeid = ahd_loc_info[0]['woeid']  # Single element is a dict
+
+# Returns a single element list
+ahd_trends = api.trends_place(id=str(ahd_woeid))
+ahd_trends = ahd_trends[0]['trends']  # Retrieve only the trends
+for trend in ahd_trends:
+    print(trend['name'])

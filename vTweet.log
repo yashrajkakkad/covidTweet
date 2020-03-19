@@ -1,50 +1,58 @@
-2020-03-19 21:23:54 - __main__ - created_at
-2020-03-19 21:23:54 - __main__ - Thu Mar 19 15:53:52 +0000 2020
-2020-03-19 21:23:54 - __main__ - id
-2020-03-19 21:23:54 - __main__ - 1240667814177828864
-2020-03-19 21:23:54 - __main__ - id_str
-2020-03-19 21:23:54 - __main__ - 1240667814177828864
-2020-03-19 21:23:54 - __main__ - text
-2020-03-19 21:23:54 - __main__ - RT @yesitshanna: From KKM: Frontliners are getting burned out, and they’re looking for medical professionals willing to volunteer to fight…
-2020-03-19 21:23:54 - __main__ - truncated
-2020-03-19 21:23:54 - __main__ - False
-2020-03-19 21:23:54 - __main__ - entities
-2020-03-19 21:23:54 - __main__ - {'hashtags': [], 'symbols': [], 'user_mentions': [{'screen_name': 'yesitshanna', 'name': 'Hanna Alkaf', 'id': 326572008, 'id_str': '326572008', 'indices': [3, 15]}], 'urls': []}
-2020-03-19 21:23:54 - __main__ - metadata
-2020-03-19 21:23:54 - __main__ - {'iso_language_code': 'en', 'result_type': 'recent'}
-2020-03-19 21:23:54 - __main__ - source
-2020-03-19 21:23:54 - __main__ - <a href="http://twitter.com/download/android" rel="nofollow">Twitter for Android</a>
-2020-03-19 21:23:54 - __main__ - in_reply_to_status_id
-2020-03-19 21:23:54 - __main__ - None
-2020-03-19 21:23:54 - __main__ - in_reply_to_status_id_str
-2020-03-19 21:23:54 - __main__ - None
-2020-03-19 21:23:54 - __main__ - in_reply_to_user_id
-2020-03-19 21:23:54 - __main__ - None
-2020-03-19 21:23:54 - __main__ - in_reply_to_user_id_str
-2020-03-19 21:23:54 - __main__ - None
-2020-03-19 21:23:54 - __main__ - in_reply_to_screen_name
-2020-03-19 21:23:54 - __main__ - None
-2020-03-19 21:23:54 - __main__ - user
-2020-03-19 21:23:54 - __main__ - {'id': 262185067, 'id_str': '262185067', 'name': "Za'im Yusoff", 'screen_name': 'zaimyusoff67', 'location': '', 'description': 'mahu jadi puyuh, bisa melihat langit semesta; oh apa guna jadi helang, cuma melihat langit sedepa | baca tulisan, rebiu di https://t.co/JakFlxy7v0', 'url': 'https://t.co/glY28yPtsb', 'entities': {'url': {'urls': [{'url': 'https://t.co/glY28yPtsb', 'expanded_url': 'http://www.zaimterbang.blogspot.com', 'display_url': 'zaimterbang.blogspot.com', 'indices': [0, 23]}]}, 'description': {'urls': [{'url': 'https://t.co/JakFlxy7v0', 'expanded_url': 'http://zaimterbang.blogspot.com', 'display_url': 'zaimterbang.blogspot.com', 'indices': [123, 146]}]}}, 'protected': False, 'followers_count': 1586, 'friends_count': 827, 'listed_count': 5, 'created_at': 'Mon Mar 07 14:56:00 +0000 2011', 'favourites_count': 11267, 'utc_offset': None, 'time_zone': None, 'geo_enabled': True, 'verified': False, 'statuses_count': 20567, 'lang': None, 'contributors_enabled': False, 'is_translator': False, 'is_translation_enabled': False, 'profile_background_color': '8B542B', 'profile_background_image_url': 'http://abs.twimg.com/images/themes/theme8/bg.gif', 'profile_background_image_url_https': 'https://abs.twimg.com/images/themes/theme8/bg.gif', 'profile_background_tile': False, 'profile_image_url': 'http://pbs.twimg.com/profile_images/1047745060291235840/ghJ6BCPD_normal.jpg', 'profile_image_url_https': 'https://pbs.twimg.com/profile_images/1047745060291235840/ghJ6BCPD_normal.jpg', 'profile_banner_url': 'https://pbs.twimg.com/profile_banners/262185067/1570843076', 'profile_link_color': '1B95E0', 'profile_sidebar_border_color': 'FFFFFF', 'profile_sidebar_fill_color': 'EADEAA', 'profile_text_color': '333333', 'profile_use_background_image': True, 'has_extended_profile': True, 'default_profile': False, 'default_profile_image': False, 'following': None, 'follow_request_sent': None, 'notifications': None, 'translator_type': 'none'}
-2020-03-19 21:23:54 - __main__ - geo
-2020-03-19 21:23:54 - __main__ - None
-2020-03-19 21:23:54 - __main__ - coordinates
-2020-03-19 21:23:54 - __main__ - None
-2020-03-19 21:23:54 - __main__ - place
-2020-03-19 21:23:54 - __main__ - None
-2020-03-19 21:23:54 - __main__ - contributors
-2020-03-19 21:23:54 - __main__ - None
-2020-03-19 21:23:54 - __main__ - retweeted_status
-2020-03-19 21:23:54 - __main__ - {'created_at': 'Tue Mar 17 16:12:16 +0000 2020', 'id': 1239947670552117248, 'id_str': '1239947670552117248', 'text': 'From KKM: Frontliners are getting burned out, and they’re looking for medical professionals willing to volunteer to… https://t.co/VuMWnjEDlF', 'truncated': True, 'entities': {'hashtags': [], 'symbols': [], 'user_mentions': [], 'urls': [{'url': 'https://t.co/VuMWnjEDlF', 'expanded_url': 'https://twitter.com/i/web/status/1239947670552117248', 'display_url': 'twitter.com/i/web/status/1…', 'indices': [117, 140]}]}, 'metadata': {'iso_language_code': 'en', 'result_type': 'recent'}, 'source': '<a href="http://twitter.com/download/iphone" rel="nofollow">Twitter for iPhone</a>', 'in_reply_to_status_id': 1239946989602627585, 'in_reply_to_status_id_str': '1239946989602627585', 'in_reply_to_user_id': 326572008, 'in_reply_to_user_id_str': '326572008', 'in_reply_to_screen_name': 'yesitshanna', 'user': {'id': 326572008, 'id_str': '326572008', 'name': 'Hanna Alkaf', 'screen_name': 'yesitshanna', 'location': 'Malaysia', 'description': 'Malaysian storyteller. THE WEIGHT OF OUR SKY | THE GIRL & THE GHOST (Aug 4) | ONCE UPON AN EID (May 5). Art: @charisloke. She/her. #kitajagakita | https://t.co/MI8qNdhbWm', 'url': 'https://t.co/8etZZ6MZe1', 'entities': {'url': {'urls': [{'url': 'https://t.co/8etZZ6MZe1', 'expanded_url': 'http://www.hannaalkaf.com', 'display_url': 'hannaalkaf.com', 'indices': [0, 23]}]}, 'description': {'urls': [{'url': 'https://t.co/MI8qNdhbWm', 'expanded_url': 'http://kitajaga.us', 'display_url': 'kitajaga.us', 'indices': [147, 170]}]}}, 'protected': False, 'followers_count': 12301, 'friends_count': 637, 'listed_count': 130, 'created_at': 'Thu Jun 30 04:01:01 +0000 2011', 'favourites_count': 19419, 'utc_offset': None, 'time_zone': None, 'geo_enabled': False, 'verified': False, 'statuses_count': 28013, 'lang': None, 'contributors_enabled': False, 'is_translator': False, 'is_translation_enabled': False, 'profile_background_color': 'C0DEED', 'profile_background_image_url': 'http://abs.twimg.com/images/themes/theme1/bg.png', 'profile_background_image_url_https': 'https://abs.twimg.com/images/themes/theme1/bg.png', 'profile_background_tile': False, 'profile_image_url': 'http://pbs.twimg.com/profile_images/1212049570848362497/-wM0MZHo_normal.jpg', 'profile_image_url_https': 'https://pbs.twimg.com/profile_images/1212049570848362497/-wM0MZHo_normal.jpg', 'profile_banner_url': 'https://pbs.twimg.com/profile_banners/326572008/1557913422', 'profile_link_color': 'F58EA8', 'profile_sidebar_border_color': 'FFFFFF', 'profile_sidebar_fill_color': 'DDEEF6', 'profile_text_color': '333333', 'profile_use_background_image': True, 'has_extended_profile': True, 'default_profile': False, 'default_profile_image': False, 'following': None, 'follow_request_sent': None, 'notifications': None, 'translator_type': 'none'}, 'geo': None, 'coordinates': None, 'place': None, 'contributors': None, 'is_quote_status': False, 'retweet_count': 842, 'favorite_count': 261, 'favorited': False, 'retweeted': False, 'possibly_sensitive': False, 'lang': 'en'}
-2020-03-19 21:23:54 - __main__ - is_quote_status
-2020-03-19 21:23:54 - __main__ - False
-2020-03-19 21:23:54 - __main__ - retweet_count
-2020-03-19 21:23:54 - __main__ - 842
-2020-03-19 21:23:54 - __main__ - favorite_count
-2020-03-19 21:23:54 - __main__ - 0
-2020-03-19 21:23:54 - __main__ - favorited
-2020-03-19 21:23:54 - __main__ - False
-2020-03-19 21:23:54 - __main__ - retweeted
-2020-03-19 21:23:54 - __main__ - False
-2020-03-19 21:23:54 - __main__ - lang
-2020-03-19 21:23:54 - __main__ - en
+2020-03-19 21:56:09 - __main__ - created_at
+2020-03-19 21:56:09 - __main__ - Thu Mar 19 16:26:06 +0000 2020
+2020-03-19 21:56:09 - __main__ - id
+2020-03-19 21:56:09 - __main__ - 1240675929468194817
+2020-03-19 21:56:09 - __main__ - id_str
+2020-03-19 21:56:09 - __main__ - 1240675929468194817
+2020-03-19 21:56:09 - __main__ - text
+2020-03-19 21:56:09 - __main__ - RT @tanukisandaime3: P活で得た要らない在庫処分しま！
+
+フォロー&amp;RTでプレゼントします🎁
+3人😀
+
+当選者にはDMするので好きなの選んでね😂現金は1日で稼いだ額でしゅ、
+
+会わないパパ活はこちら💁‍♀️
+癖強い人多いけど、ノンアダルトで結構高額振り込んで…
+2020-03-19 21:56:09 - __main__ - truncated
+2020-03-19 21:56:09 - __main__ - False
+2020-03-19 21:56:09 - __main__ - entities
+2020-03-19 21:56:09 - __main__ - {'hashtags': [], 'symbols': [], 'user_mentions': [{'screen_name': 'tanukisandaime3', 'name': 'ぴぇん丸🥺@pj', 'id': 853499438777618434, 'id_str': '853499438777618434', 'indices': [3, 19]}], 'urls': []}
+2020-03-19 21:56:09 - __main__ - metadata
+2020-03-19 21:56:09 - __main__ - {'iso_language_code': 'ja', 'result_type': 'recent'}
+2020-03-19 21:56:09 - __main__ - source
+2020-03-19 21:56:09 - __main__ - <a href="http://twitter.com/download/iphone" rel="nofollow">Twitter for iPhone</a>
+2020-03-19 21:56:09 - __main__ - in_reply_to_status_id
+2020-03-19 21:56:09 - __main__ - None
+2020-03-19 21:56:09 - __main__ - in_reply_to_status_id_str
+2020-03-19 21:56:09 - __main__ - None
+2020-03-19 21:56:09 - __main__ - in_reply_to_user_id
+2020-03-19 21:56:09 - __main__ - None
+2020-03-19 21:56:09 - __main__ - in_reply_to_user_id_str
+2020-03-19 21:56:09 - __main__ - None
+2020-03-19 21:56:09 - __main__ - in_reply_to_screen_name
+2020-03-19 21:56:09 - __main__ - None
+2020-03-19 21:56:09 - __main__ - user
+2020-03-19 21:56:09 - __main__ - {'id': 2942979576, 'id_str': '2942979576', 'name': 'ちくりん', 'screen_name': '3lF28', 'location': '', 'description': 'キキララ', 'url': None, 'entities': {'description': {'urls': []}}, 'protected': False, 'followers_count': 119, 'friends_count': 193, 'listed_count': 2, 'created_at': 'Thu Dec 25 15:56:19 +0000 2014', 'favourites_count': 26544, 'utc_offset': None, 'time_zone': None, 'geo_enabled': False, 'verified': False, 'statuses_count': 6883, 'lang': None, 'contributors_enabled': False, 'is_translator': False, 'is_translation_enabled': False, 'profile_background_color': '000000', 'profile_background_image_url': 'http://abs.twimg.com/images/themes/theme1/bg.png', 'profile_background_image_url_https': 'https://abs.twimg.com/images/themes/theme1/bg.png', 'profile_background_tile': False, 'profile_image_url': 'http://pbs.twimg.com/profile_images/1220008088989626371/jFpLwF9L_normal.jpg', 'profile_image_url_https': 'https://pbs.twimg.com/profile_images/1220008088989626371/jFpLwF9L_normal.jpg', 'profile_banner_url': 'https://pbs.twimg.com/profile_banners/2942979576/1579707570', 'profile_link_color': '89C9FA', 'profile_sidebar_border_color': '000000', 'profile_sidebar_fill_color': '000000', 'profile_text_color': '000000', 'profile_use_background_image': False, 'has_extended_profile': True, 'default_profile': False, 'default_profile_image': False, 'following': None, 'follow_request_sent': None, 'notifications': None, 'translator_type': 'none'}
+2020-03-19 21:56:09 - __main__ - geo
+2020-03-19 21:56:09 - __main__ - None
+2020-03-19 21:56:09 - __main__ - coordinates
+2020-03-19 21:56:09 - __main__ - None
+2020-03-19 21:56:09 - __main__ - place
+2020-03-19 21:56:09 - __main__ - None
+2020-03-19 21:56:09 - __main__ - contributors
+2020-03-19 21:56:09 - __main__ - None
+2020-03-19 21:56:09 - __main__ - retweeted_status
+2020-03-19 21:56:09 - __main__ - {'created_at': 'Thu Mar 19 08:12:04 +0000 2020', 'id': 1240551602223640576, 'id_str': '1240551602223640576', 'text': 'P活で得た要らない在庫処分しま！\n\nフォロー&amp;RTでプレゼントします🎁\n3人😀\n\n当選者にはDMするので好きなの選んでね😂現金は1日で稼いだ額でしゅ、\n\n会わないパパ活はこちら💁\u200d♀️\n癖強い人多いけど、ノンアダルトで結構高額振り… https://t.co/Ezzt6Xvh8J', 'truncated': True, 'entities': {'hashtags': [], 'symbols': [], 'user_mentions': [], 'urls': [{'url': 'https://t.co/Ezzt6Xvh8J', 'expanded_url': 'https://twitter.com/i/web/status/1240551602223640576', 'display_url': 'twitter.com/i/web/status/1…', 'indices': [121, 144]}]}, 'metadata': {'iso_language_code': 'ja', 'result_type': 'recent'}, 'source': '<a href="http://twitter.com/download/iphone" rel="nofollow">Twitter for iPhone</a>', 'in_reply_to_status_id': None, 'in_reply_to_status_id_str': None, 'in_reply_to_user_id': None, 'in_reply_to_user_id_str': None, 'in_reply_to_screen_name': None, 'user': {'id': 853499438777618434, 'id_str': '853499438777618434', 'name': 'ぴぇん丸🥺@pj', 'screen_name': 'tanukisandaime3', 'location': '', 'description': 'P活にステータス割り振ってます🥺ぴぇん', 'url': None, 'entities': {'description': {'urls': []}}, 'protected': False, 'followers_count': 10818, 'friends_count': 2462, 'listed_count': 110, 'created_at': 'Sun Apr 16 06:44:58 +0000 2017', 'favourites_count': 84, 'utc_offset': None, 'time_zone': None, 'geo_enabled': False, 'verified': False, 'statuses_count': 196, 'lang': None, 'contributors_enabled': False, 'is_translator': False, 'is_translation_enabled': False, 'profile_background_color': 'F5F8FA', 'profile_background_image_url': None, 'profile_background_image_url_https': None, 'profile_background_tile': False, 'profile_image_url': 'http://pbs.twimg.com/profile_images/1240555973317545985/VkbbHH6u_normal.jpg', 'profile_image_url_https': 'https://pbs.twimg.com/profile_images/1240555973317545985/VkbbHH6u_normal.jpg', 'profile_banner_url': 'https://pbs.twimg.com/profile_banners/853499438777618434/1584606629', 'profile_link_color': '1DA1F2', 'profile_sidebar_border_color': 'C0DEED', 'profile_sidebar_fill_color': 'DDEEF6', 'profile_text_color': '333333', 'profile_use_background_image': True, 'has_extended_profile': False, 'default_profile': True, 'default_profile_image': False, 'following': None, 'follow_request_sent': None, 'notifications': None, 'translator_type': 'none'}, 'geo': None, 'coordinates': None, 'place': None, 'contributors': None, 'is_quote_status': False, 'retweet_count': 270, 'favorite_count': 132, 'favorited': False, 'retweeted': False, 'possibly_sensitive': True, 'lang': 'ja'}
+2020-03-19 21:56:09 - __main__ - is_quote_status
+2020-03-19 21:56:09 - __main__ - False
+2020-03-19 21:56:09 - __main__ - retweet_count
+2020-03-19 21:56:09 - __main__ - 270
+2020-03-19 21:56:09 - __main__ - favorite_count
+2020-03-19 21:56:09 - __main__ - 0
+2020-03-19 21:56:09 - __main__ - favorited
+2020-03-19 21:56:09 - __main__ - False
+2020-03-19 21:56:09 - __main__ - retweeted
+2020-03-19 21:56:09 - __main__ - False
+2020-03-19 21:56:09 - __main__ - lang
+2020-03-19 21:56:09 - __main__ - ja
