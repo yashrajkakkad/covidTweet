@@ -80,8 +80,9 @@ class Database():
     def __init__(self):
         self.connection = self.engine.connect()
         print("DB Instance created")
+
     def create_all(self):
-        declarative_base().metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
         print("Tables created")
     
     def generate_create_queries(self, filename='createqueries.sql'):
