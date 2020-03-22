@@ -10,9 +10,6 @@ from app import db
 # Base = declarative_base()
     
 
-tweet_hashtag_table = db.Table('tweet_hashtag_table', db.Model.metadata, db.Column('tweet_id', db.Integer, db.ForeignKey('tweets.tweet_id')), db.Column('hashtag', db.String(50), db.ForeignKey('hashtags.hashtag')))
-
-
 class Hashtag(db.Model):
     __tablename__ = 'hashtags'
     hashtag = db.Column(db.String(50), primary_key=True)
@@ -75,6 +72,8 @@ class MentionedUser(User):
     user = db.relationship('User', back_populates='mentioned_users')
     tweet = db.relationship('BaseTweet', back_populates='mentioned_users')
 
+tweet_hashtag_table = db.Table('tweet_hashtag_table', db.Model.metadata, db.Column('tweet_id', db.Integer, db.ForeignKey('base_tweets.tweet_id')), db.Column('hashtag', db.String(50), db.ForeignKey('hashtags.hashtag')))
+
 class Database():
     # engine = db.create_engine('postgresql://vtweet:vtweet!#%@localhost/vtweet')
 
@@ -85,6 +84,7 @@ class Database():
     def create_all(self):
         # Base.metadata.create_all(self.engine)
         db.create_all()
+        # db.session.commit()
         print("Tables created")
     
     def generate_create_queries(self, filename='createqueries.sql'):
