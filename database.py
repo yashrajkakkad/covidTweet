@@ -1,88 +1,90 @@
-import sqlalchemy as db
-from sqlalchemy import Column, Integer, String, BigInteger, Boolean, DateTime, Table, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+# import sqlalchemy as db
+# from sqlalchemy import Column, Integer, String, BigInteger, Boolean, DateTime, Table, ForeignKey
+# from sqlalchemy.orm import relationship
+# from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import CreateTable
 from sqlalchemy.dialects import postgresql
+from app import db
 
-Base = declarative_base()
-
+# from app.db import Column, Integer, String, BigInteger, Boolean, DateTime, Table, ForeignKey
+# Base = declarative_base()
     
 
-tweet_hashtag_table = Table('tweet_hashtag_table', Base.metadata, Column('tweet_id', Integer, ForeignKey('tweets.tweet_id')), Column('hashtag', String(50), ForeignKey('hashtags.hashtag')))
+tweet_hashtag_table = db.Table('tweet_hashtag_table', db.Model.metadata, db.Column('tweet_id', db.Integer, db.ForeignKey('tweets.tweet_id')), db.Column('hashtag', db.String(50), db.ForeignKey('hashtags.hashtag')))
 
 
-class Hashtag(Base):
+class Hashtag(db.Model):
     __tablename__ = 'hashtags'
-    hashtag = Column(String(50), primary_key=True)
+    hashtag = db.Column(db.String(50), primary_key=True)
 
-class Place(Base):
+class Place(db.Model):
     __tablename__ = 'places'
-    place_id = Column(Integer, primary_key=True)
-    name = Column(String(50))
-    country = Column(String(50))
-    country_code = Column(String(5))
+    place_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    country = db.Column(db.String(50))
+    country_code = db.Column(db.String(5))
 
-class User(Base):
+class User(db.Model):
     __tablename__ = 'users'
-    id = Column(BigInteger, primary_key=True)
-    id_str = Column(String(20))
-    name = Column(String(60))
-    screen_name = Column(String(60))
-    followers_count = Column(Integer)
-    verified = Column(Boolean)
-    profile_image_url_https = Column(String(512))
-    favourites_count = Column(Integer)
+    id = db.Column(db.BigInteger, primary_key=True)
+    id_str = db.Column(db.String(20))
+    name = db.Column(db.String(60))
+    screen_name = db.Column(db.String(60))
+    followers_count = db.Column(db.Integer)
+    verified = db.Column(db.Boolean)
+    profile_image_url_https = db.Column(db.String(512))
+    favourites_count = db.Column(db.Integer)
 
-class BaseTweet(Base):
+class BaseTweet(db.Model):
     __tablename__ = 'base_tweets'
-    tweet_id = Column(BigInteger, primary_key=True)
-    tweet_id_str = Column(String(20))
-    source = Column(String(512))
-    favorited = Column(Boolean)
-    retweeted = Column(Boolean)
-    favorite_count = Column(Integer)
-    retweet_count = Column(Integer)
-    result_type = Column(String(20))
-    created_at = Column(DateTime)
-    lang = Column(String(10))
-    possibly_sensitive = Column(Boolean)
-    reply_count = Column(Integer)
-    place_id = Column(Integer, ForeignKey('places.place_id'))
-    place = relationship('Place', back_populates='base_tweets')
+    tweet_id = db.Column(db.BigInteger, primary_key=True)
+    tweet_id_str = db.Column(db.String(20))
+    source = db.Column(db.String(512))
+    favorited = db.Column(db.Boolean)
+    retweeted = db.Column(db.Boolean)
+    favorite_count = db.Column(db.Integer)
+    retweet_count = db.Column(db.Integer)
+    result_type = db.Column(db.String(20))
+    created_at = db.Column(db.DateTime)
+    lang = db.Column(db.String(10))
+    possibly_sensitive = db.Column(db.Boolean)
+    reply_count = db.Column(db.Integer)
+    place_id = db.Column(db.Integer, db.ForeignKey('places.place_id'))
+    place = db.relationship('Place', back_populates='base_tweets')
 
 
 class TweetUser(User):
     __tablename__ = 'tweet_users'
-    user_id = Column(BigInteger, ForeignKey('users.id'), primary_key=True)
-    tweet_id = Column(BigInteger, ForeignKey('base_tweets.tweet_id'), primary_key=True)
-    user = relationship('User', back_populates='tweet_users')
-    tweet = relationship('BaseTweet', back_populates='tweet_users')
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), primary_key=True)
+    tweet_id = db.Column(db.BigInteger, db.ForeignKey('base_tweets.tweet_id'), primary_key=True)
+    user = db.relationship('User', back_populates='tweet_users')
+    tweet = db.relationship('BaseTweet', back_populates='tweet_users')
 
 
 class RetweetedUser(User):
     __tablename__ = 'retweeted_users'
-    user_id = Column(BigInteger, ForeignKey('users.id'), primary_key=True)
-    tweet_id = Column(BigInteger, ForeignKey('base_tweets.tweet_id'), primary_key=True)
-    user = relationship('User', back_populates='retweeted_users')
-    tweet = relationship('BaseTweet', back_populates='retweeted_users')
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), primary_key=True)
+    tweet_id = db.Column(db.BigInteger, db.ForeignKey('base_tweets.tweet_id'), primary_key=True)
+    user = db.relationship('User', back_populates='retweeted_users')
+    tweet = db.relationship('BaseTweet', back_populates='retweeted_users')
 
 class MentionedUser(User):
     __tablename__ = 'mentioned_users'
-    user_id = Column(BigInteger, ForeignKey('users.id'), primary_key=True)
-    tweet_id = Column(BigInteger, ForeignKey('base_tweets.tweet_id'), primary_key=True)
-    user = relationship('User', back_populates='mentioned_users')
-    tweet = relationship('BaseTweet', back_populates='mentioned_users')
+    user_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), primary_key=True)
+    tweet_id = db.Column(db.BigInteger, db.ForeignKey('base_tweets.tweet_id'), primary_key=True)
+    user = db.relationship('User', back_populates='mentioned_users')
+    tweet = db.relationship('BaseTweet', back_populates='mentioned_users')
 
 class Database():
-    engine = db.create_engine('postgresql://vtweet:vtweet!#%@localhost/vtweet')
+    # engine = db.create_engine('postgresql://vtweet:vtweet!#%@localhost/vtweet')
 
     def __init__(self):
-        self.connection = self.engine.connect()
+        self.connection = db.engine.connect()
         print("DB Instance created")
 
     def create_all(self):
-        Base.metadata.create_all(self.engine)
+        # Base.metadata.create_all(self.engine)
+        db.create_all()
         print("Tables created")
     
     def generate_create_queries(self, filename='createqueries.sql'):
