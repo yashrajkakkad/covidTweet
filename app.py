@@ -8,9 +8,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
         query = request.form['query']
-        # get_tweets(query)        
+        # get_tweets(query)
     return render_template('index.html')
