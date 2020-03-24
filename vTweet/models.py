@@ -4,10 +4,27 @@
 # from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import CreateTable
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.orm import mapper
 from vTweet import db
 
 # from app.db import Column, Integer, String, BigInteger, Boolean, DateTime, Table, ForeignKey
 # Base = declarative_base()
+
+
+tweet_hashtag_table = db.Table('tweet_hashtag_table', db.Model.metadata, db.Column('tweet_id', db.Integer, db.ForeignKey(
+    'base_tweets.tweet_id')), db.Column('hashtag', db.String(50), db.ForeignKey('hashtags.hashtag')))
+
+# tweet_users = db.Table('tweet_users', db.Model.metadata, db.Column('user_id', db.BigInteger, db.ForeignKey(
+#     'users.id')), db.Column('tweet_id', db.BigInteger, db.ForeignKey(
+#         'base_tweets.tweet_id')))
+
+# retweeted_users = db.Table('retweeted_users', db.Model.metadata, db.Column('user_id', db.BigInteger, db.ForeignKey(
+#     'users.id')), db.Column('tweet_id', db.BigInteger, db.ForeignKey(
+#         'base_tweets.tweet_id')))
+
+# mentioned_users = db.Table('mentioned_users', db.Model.metadata, db.Column('user_id', db.BigInteger, db.ForeignKey(
+#     'users.id')), db.Column('tweet_id', db.BigInteger, db.ForeignKey(
+#         'base_tweets.tweet_id')))
 
 
 class Hashtag(db.Model):
@@ -33,6 +50,19 @@ class User(db.Model):
     verified = db.Column(db.Boolean)
     profile_image_url_https = db.Column(db.String(512))
     favourites_count = db.Column(db.Integer)
+    user_type = db.Column(postgresql.ENUM(
+        'tweet_user', 'retweeted_user', 'mentioned_user', name='user_type_enum'))
+    tweets = db.relationship(
+        'BaseTweet', secondary='tweet_users', backref='tweet_users')
+    retweets = db.relationship(
+        'BaseTweet', secondary='retweeted_users', backref='retweeted_users')
+    mentioned_tweets = db.relationship(
+        'BaseTweet', secondary='mentioned_users', backref='mentioned_users')
+
+    __mapper_args__ = {
+        "polymorphic_identity": "person",
+        "polymorphic_on": user_type,
+    }
 
 
 class BaseTweet(db.Model):
@@ -50,7 +80,9 @@ class BaseTweet(db.Model):
     possibly_sensitive = db.Column(db.Boolean)
     reply_count = db.Column(db.Integer)
     place_id = db.Column(db.Integer, db.ForeignKey('places.place_id'))
-    place = db.relationship('Place', back_populates='base_tweets')
+    place = db.relationship('Place', backref='base_tweets')
+    hashtags = db.relationship(
+        'Hashtag', secondary=tweet_hashtag_table, backref='base_tweets')
 
 
 class TweetUser(User):
@@ -59,8 +91,12 @@ class TweetUser(User):
         'users.id'), primary_key=True)
     tweet_id = db.Column(db.BigInteger, db.ForeignKey(
         'base_tweets.tweet_id'), primary_key=True)
-    user = db.relationship('User', back_populates='tweet_users')
-    tweet = db.relationship('BaseTweet', back_populates='tweet_users')
+    # user = db.relationship('User', back_populates='tweet_users')
+    # tweet = db.relationship('BaseTweet', back_populates='tweet_users')
+    __mapper_args__ = {"polymorphic_identity": "tweetuser"}
+
+
+# mapper(TweetUser, tweet_users)
 
 
 class RetweetedUser(User):
@@ -69,8 +105,12 @@ class RetweetedUser(User):
         'users.id'), primary_key=True)
     tweet_id = db.Column(db.BigInteger, db.ForeignKey(
         'base_tweets.tweet_id'), primary_key=True)
-    user = db.relationship('User', back_populates='retweeted_users')
-    tweet = db.relationship('BaseTweet', back_populates='retweeted_users')
+    # user = db.relationship('User', back_populates='retweeted_users')
+    # tweet = db.relationship('BaseTweet', back_populates='retweeted_users')
+    __mapper_args__ = {"polymorphic_identity": "retweetuser"}
+
+
+# mapper(RetweetedUser, retweeted_users)
 
 
 class MentionedUser(User):
@@ -79,12 +119,12 @@ class MentionedUser(User):
         'users.id'), primary_key=True)
     tweet_id = db.Column(db.BigInteger, db.ForeignKey(
         'base_tweets.tweet_id'), primary_key=True)
-    user = db.relationship('User', back_populates='mentioned_users')
-    tweet = db.relationship('BaseTweet', back_populates='mentioned_users')
+    # # user = db.relationship('User', back_populates='mentioned_users')
+    # tweet = db.relationship('BaseTweet', back_populates='mentioned_users')
+    __mapper_args__ = {"polymorphic_identity": "mentioneduser"}
 
 
-tweet_hashtag_table = db.Table('tweet_hashtag_table', db.Model.metadata, db.Column('tweet_id', db.Integer, db.ForeignKey(
-    'base_tweets.tweet_id')), db.Column('hashtag', db.String(50), db.ForeignKey('hashtags.hashtag')))
+# mapper(MentionedUser, mentioned_users)
 
 
 class Database():
@@ -92,13 +132,14 @@ class Database():
 
     def __init__(self):
         self.connection = db.engine.connect()
-        print("DB Instance created")
-
-    def create_all(self):
-        # Base.metadata.create_all(self.engine)
         db.create_all()
-        # db.session.commit()
+        print("DB Instance created")
         print("Tables created")
+
+    # def create_all(self):
+    #     # Base.metadata.create_all(self.engine)
+    #     db.create_all()
+    #     # db.session.commit()
 
     def generate_create_queries(self, filename='createqueries.sql'):
         # print(CreateTable(Hashtag.__table__))

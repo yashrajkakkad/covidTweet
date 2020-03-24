@@ -6,4 +6,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://vtweet:vtweet!#%@localhost
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+# from vTweet.models import Database
+# database = Database()
 from vTweet import routes
