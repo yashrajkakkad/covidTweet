@@ -6,7 +6,6 @@ from sqlalchemy.schema import CreateTable
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import mapper
 from vTweet import db
-
 # from app.db import Column, Integer, String, BigInteger, Boolean, DateTime, Table, ForeignKey
 # Base = declarative_base()
 
@@ -34,7 +33,7 @@ class Hashtag(db.Model):
 
 class Place(db.Model):
     __tablename__ = 'places'
-    place_id = db.Column(db.Integer, primary_key=True)
+    place_id = db.Column(db.String(20), primary_key=True)
     name = db.Column(db.String(50))
     country = db.Column(db.String(50))
     country_code = db.Column(db.String(5))
@@ -79,7 +78,7 @@ class BaseTweet(db.Model):
     lang = db.Column(db.String(10))
     possibly_sensitive = db.Column(db.Boolean)
     reply_count = db.Column(db.Integer)
-    place_id = db.Column(db.Integer, db.ForeignKey('places.place_id'))
+    place_id = db.Column(db.String(20), db.ForeignKey('places.place_id'))
     place = db.relationship('Place', backref='base_tweets')
     hashtags = db.relationship(
         'Hashtag', secondary=tweet_hashtag_table, backref='base_tweets')
@@ -170,5 +169,5 @@ class Database():
 
 if __name__ == "__main__":
     database = Database()
-    database.create_all()
+    # database.create_all()
     # database.generate_create_queries()
