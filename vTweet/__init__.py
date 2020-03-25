@@ -13,6 +13,8 @@ auth = tweepy.OAuthHandler(
     config('CONSUMER_KEY'), config('CONSUMER_SECRET'))
 api = tweepy.API(auth)
 
-# from vTweet.models import Database
-# database = Database()
+# Create all models
+from vTweet.models import Database
+database = Database()
+
 from vTweet import routes
