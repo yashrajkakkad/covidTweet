@@ -42,7 +42,6 @@ CREATE TABLE base_tweets (
 	created_at TIMESTAMP WITHOUT TIME ZONE, 
 	lang VARCHAR(10), 
 	possibly_sensitive BOOLEAN, 
-	reply_count INTEGER, 
 	place_id VARCHAR(20), 
 	PRIMARY KEY (tweet_id), 
 	FOREIGN KEY(place_id) REFERENCES places (place_id)
@@ -78,4 +77,13 @@ CREATE TABLE mentioned_users (
 	FOREIGN KEY(tweet_id) REFERENCES base_tweets (tweet_id)
 )
 
+
+
+CREATE TABLE tweet_hashtag (
+	tweet_id BIGINT NOT NULL, 
+	hashtag VARCHAR(50) NOT NULL, 
+	PRIMARY KEY (tweet_id, hashtag), 
+	FOREIGN KEY(tweet_id) REFERENCES base_tweets (tweet_id), 
+	FOREIGN KEY(hashtag) REFERENCES hashtags (hashtag)
+)
 
