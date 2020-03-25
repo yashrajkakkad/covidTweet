@@ -10,8 +10,8 @@ from vTweet import db
 # Base = declarative_base()
 
 
-tweet_hashtag_table = db.Table('tweet_hashtag_table', db.Model.metadata, db.Column('tweet_id', db.Integer, db.ForeignKey(
-    'base_tweets.tweet_id')), db.Column('hashtag', db.String(50), db.ForeignKey('hashtags.hashtag')))
+# tweet_hashtag_table = db.Table('tweet_hashtag_table', db.Model.metadata, db.Column('tweet_id', db.Integer, db.ForeignKey(
+#     'base_tweets.tweet_id')), db.Column('hashtag', db.String(50), db.ForeignKey('hashtags.hashtag')))
 
 # tweet_users = db.Table('tweet_users', db.Model.metadata, db.Column('user_id', db.BigInteger, db.ForeignKey(
 #     'users.id')), db.Column('tweet_id', db.BigInteger, db.ForeignKey(
@@ -77,11 +77,10 @@ class BaseTweet(db.Model):
     created_at = db.Column(db.DateTime)
     lang = db.Column(db.String(10))
     possibly_sensitive = db.Column(db.Boolean)
-    reply_count = db.Column(db.Integer)
     place_id = db.Column(db.String(20), db.ForeignKey('places.place_id'))
     place = db.relationship('Place', backref='base_tweets')
     hashtags = db.relationship(
-        'Hashtag', secondary=tweet_hashtag_table, backref='base_tweets')
+        'Hashtag', secondary='tweet_hashtag', backref='base_tweets')
 
 
 class TweetUser(db.Model):
@@ -123,7 +122,15 @@ class MentionedUser(db.Model):
     # __mapper_args__ = {"polymorphic_identity": "mentioneduser"}
 
 
-# mapper(MentionedUser, mentioned_users)
+class TweetHashtag(db.Model):
+    __tablename__ = 'tweet_hashtag'
+    tweet_id = db.Column(db.BigInteger, db.ForeignKey(
+        'base_tweets.tweet_id'), primary_key=True)
+    hashtag = db.Column(db.String(50), db.ForeignKey(
+        'hashtags.hashtag'), primary_key=True)
+    tweet_id_relationship = db.relationship(BaseTweet, backref='tweet_hashtag')
+    hashtag_relationship = db.relationship(Hashtag, backref='tweet_hashtag')
+    # mapper(MentionedUser, mentioned_users)
 
 
 class Database():
@@ -165,6 +172,8 @@ class Database():
             f.write(CreateTable(MentionedUser.__table__).compile(
                 dialect=postgresql.dialect()).__str__())
             f.write('\n')
+            f.write(CreateTable(TweetHashtag.__table__).compile(
+                dialect=postgresql.dialect()).__str__())
 
 
 if __name__ == "__main__":
