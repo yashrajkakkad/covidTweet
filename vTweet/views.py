@@ -100,14 +100,14 @@ def get_tweets(query):
             db.session.rollback()
             pass
 
-        # tweet_user = TweetUser(user_id=id, tweet_id=json_dict['id'])
-        # db.session.add(tweet_user)
-        # try:
-        #     db.session.commit()
-        #     print('Tweet User added')
-        # except sqlIntegrityError:
-        #     db.session.rollback()
-        #     pass
+        tweet_user = TweetUser(user_id=id, tweet_id=json_dict['id'])
+        db.session.add(tweet_user)
+        try:
+            db.session.commit()
+            print('Tweet User added')
+        except sqlIntegrityError:
+            db.session.rollback()
+            pass
 
         # Retweeted User
         try:
@@ -138,15 +138,15 @@ def get_tweets(query):
                 db.session.rollback()
                 pass
 
-            # retweeted_user = RetweetedUser(
-            #     id=id, tweet_id=json_dict['id'])
-            # db.session.add(retweeted_user)
-            # try:
-            #     db.session.commit()
-            #     print('Retweeted User added')
-            # except sqlIntegrityError:
-            #     db.session.rollback()
-            #     pass
+            retweeted_user = RetweetedUser(
+                user_id=id, tweet_id=json_dict['id'])
+            db.session.add(retweeted_user)
+            try:
+                db.session.commit()
+                print('Retweeted User added')
+            except sqlIntegrityError:
+                db.session.rollback()
+                pass
         except KeyError:
             pass
 
@@ -154,13 +154,15 @@ def get_tweets(query):
         user_mentions = json_dict['entities']['user_mentions']
         for user_mentioned in user_mentions:
             id = user_mentioned['id']
-            user_obj = api.get_user(id=id)
+            try:
+                user_obj = api.get_user(id=id)
+            except tweepy.error.TweepError:
+                continue
             user = User(id=id, id_str=user_obj.id_str, name=user_obj.name, screen_name=user_obj.screen_name, followers_count=user_obj.followers_count,
                         verified=user_obj.verified, profile_image_url_https=user_obj.profile_image_url_https, favourites_count=user_obj.favourites_count)
             db.session.add(user)
             try:
                 db.session.commit()
-                print('Retweeted User added')
             except sqlIntegrityError:
                 db.session.rollback()
                 pass
