@@ -24,7 +24,8 @@ def insert_tweets(query):
     # May not work for Gujarati cities. Not enough people posting with location info
 
     geocode = str(BENG_LAT) + ',' + str(BENG_LONG) + ',1mi'
-    for tweet in tweepy.Cursor(api.search, q=query, geocode=geocode).items(10):
+    for i, tweet in enumerate(tweepy.Cursor(api.search, q=query, geocode=geocode).items(10)):
+        logger.info('TWEET NO. %d', i)
         json_dict = tweet._json
 
         # Hashtags
@@ -42,10 +43,10 @@ def insert_tweets(query):
             except sqlIntegrityError:
                 db.session.rollback()
                 pass
-        logger.info('HASHTAGS COMMITTED')
+        logger.info('%d HASHTAGS COMMITTED', len(hashtag_models))
 
         # Place
-        logger.info('PLACES')
+        logger.info('PLACE')
         place_id = None
         place = None
         try:
@@ -64,10 +65,10 @@ def insert_tweets(query):
         except sqlIntegrityError:
             db.session.rollback()
             pass
-        logger.info('PLACES COMMITTED')
+        logger.info('PLACE COMMITTED')
 
         # Tweets
-        logger.info('TWEETS')
+        logger.info('TWEET')
         created_at = json_dict['created_at']
         # Hoping that the numbers are zero padded
         created_at = datetime.strptime(
@@ -85,10 +86,10 @@ def insert_tweets(query):
         except sqlIntegrityError:
             db.session.rollback()
             pass
-        logger.info('TWEETS ADDED')
+        logger.info('TWEET ADDED')
 
         # Tweeted User
-        logger.info('OPs OF TWEETS')
+        logger.info('OPs OF TWEET')
         user_json = json_dict['user']
         id = user_json['id']
         id_str = user_json['id_str']
@@ -108,9 +109,9 @@ def insert_tweets(query):
         except sqlIntegrityError:
             db.session.rollback()
             pass
-        logger.info('OPs OF TWEETS ADDED')
+        logger.info('OPs OF TWEET ADDED')
 
-        logger.info('TWEET USERS')
+        logger.info('TWEET USER')
         tweet_user = TweetUser(user_id=id, tweet_id=json_dict['id'])
         db.session.add(tweet_user)
         try:
@@ -119,10 +120,10 @@ def insert_tweets(query):
         except sqlIntegrityError:
             db.session.rollback()
             pass
-        logger.info('TWEET USERS ADDED')
+        logger.info('TWEET USER ADDED')
 
         # Retweeted User
-        logger.info('RETWEETED USERS')
+        logger.info('RETWEETED USER')
         try:
             retweeted_dict = json_dict['retweeted_status']
             user_json = retweeted_dict['user']
@@ -155,10 +156,10 @@ def insert_tweets(query):
                 pass
         except KeyError:
             pass
-        logger.info('RETWEETED USERS ADDED')
+        logger.info('RETWEETED USER ADDED')
 
         # Mentioned Users
-        logger.info('MENTIONED USERS')
+        logger.info('MENTIONED USER')
         user_mentions = json_dict['entities']['user_mentions']
         for user_mentioned in user_mentions:
             id = user_mentioned['id']
@@ -174,7 +175,7 @@ def insert_tweets(query):
             except sqlIntegrityError:
                 db.session.rollback()
                 pass
-        logger.info('MENTIONED USERS ADDED')
+        logger.info('MENTIONED USER ADDED')
 
         # print(tweet)
         logger.info('TWEET_HASHTAGS')
@@ -188,6 +189,6 @@ def insert_tweets(query):
             except sqlIntegrityError:
                 db.session.rollback()
                 pass
-        logger.info('TWEET HASHTAGS ADDED')
+        logger.info('TWEET_HASHTAGS ADDED')
 
         logger.info('\n\n')
