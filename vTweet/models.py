@@ -49,8 +49,8 @@ class User(db.Model):
     verified = db.Column(db.Boolean)
     profile_image_url_https = db.Column(db.String(512))
     favourites_count = db.Column(db.Integer)
-    user_type = db.Column(postgresql.ENUM(
-        'tweet_user', 'retweeted_user', 'mentioned_user', name='user_type_enum'))
+    # user_type = db.Column(postgresql.ENUM(
+    #     'tweet_user', 'retweeted_user', 'mentioned_user', name='user_type_enum'))
     tweets = db.relationship(
         'BaseTweet', secondary='tweet_users', backref='tweet_users')
     retweets = db.relationship(
@@ -58,10 +58,10 @@ class User(db.Model):
     mentioned_tweets = db.relationship(
         'BaseTweet', secondary='mentioned_users', backref='mentioned_users')
 
-    __mapper_args__ = {
-        "polymorphic_identity": "person",
-        "polymorphic_on": user_type,
-    }
+    # __mapper_args__ = {
+    #     "polymorphic_identity": "person",
+    #     "polymorphic_on": user_type,
+    # }
 
 
 class BaseTweet(db.Model):
@@ -84,7 +84,7 @@ class BaseTweet(db.Model):
         'Hashtag', secondary=tweet_hashtag_table, backref='base_tweets')
 
 
-class TweetUser(User):
+class TweetUser(db.Model):
     __tablename__ = 'tweet_users'
     user_id = db.Column(db.BigInteger, db.ForeignKey(
         'users.id'), primary_key=True)
@@ -92,13 +92,13 @@ class TweetUser(User):
         'base_tweets.tweet_id'), primary_key=True)
     # user = db.relationship('User', back_populates='tweet_users')
     # tweet = db.relationship('BaseTweet', back_populates='tweet_users')
-    __mapper_args__ = {"polymorphic_identity": "tweetuser"}
+    # __mapper_args__ = {"polymorphic_identity": "tweetuser"}
 
 
 # mapper(TweetUser, tweet_users)
 
 
-class RetweetedUser(User):
+class RetweetedUser(db.Model):
     __tablename__ = 'retweeted_users'
     user_id = db.Column(db.BigInteger, db.ForeignKey(
         'users.id'), primary_key=True)
@@ -106,13 +106,13 @@ class RetweetedUser(User):
         'base_tweets.tweet_id'), primary_key=True)
     # user = db.relationship('User', back_populates='retweeted_users')
     # tweet = db.relationship('BaseTweet', back_populates='retweeted_users')
-    __mapper_args__ = {"polymorphic_identity": "retweetuser"}
+    # __mapper_args__ = {"polymorphic_identity": "retweetuser"}
 
 
 # mapper(RetweetedUser, retweeted_users)
 
 
-class MentionedUser(User):
+class MentionedUser(db.Model):
     __tablename__ = 'mentioned_users'
     user_id = db.Column(db.BigInteger, db.ForeignKey(
         'users.id'), primary_key=True)
@@ -120,7 +120,7 @@ class MentionedUser(User):
         'base_tweets.tweet_id'), primary_key=True)
     # # user = db.relationship('User', back_populates='mentioned_users')
     # tweet = db.relationship('BaseTweet', back_populates='mentioned_users')
-    __mapper_args__ = {"polymorphic_identity": "mentioneduser"}
+    # __mapper_args__ = {"polymorphic_identity": "mentioneduser"}
 
 
 # mapper(MentionedUser, mentioned_users)
