@@ -6,24 +6,6 @@ from sqlalchemy.schema import CreateTable
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import mapper
 from vTweet import db
-# from app.db import Column, Integer, String, BigInteger, Boolean, DateTime, Table, ForeignKey
-# Base = declarative_base()
-
-
-# tweet_hashtag_table = db.Table('tweet_hashtag_table', db.Model.metadata, db.Column('tweet_id', db.Integer, db.ForeignKey(
-#     'base_tweets.tweet_id')), db.Column('hashtag', db.String(50), db.ForeignKey('hashtags.hashtag')))
-
-# tweet_users = db.Table('tweet_users', db.Model.metadata, db.Column('user_id', db.BigInteger, db.ForeignKey(
-#     'users.id')), db.Column('tweet_id', db.BigInteger, db.ForeignKey(
-#         'base_tweets.tweet_id')))
-
-# retweeted_users = db.Table('retweeted_users', db.Model.metadata, db.Column('user_id', db.BigInteger, db.ForeignKey(
-#     'users.id')), db.Column('tweet_id', db.BigInteger, db.ForeignKey(
-#         'base_tweets.tweet_id')))
-
-# mentioned_users = db.Table('mentioned_users', db.Model.metadata, db.Column('user_id', db.BigInteger, db.ForeignKey(
-#     'users.id')), db.Column('tweet_id', db.BigInteger, db.ForeignKey(
-#         'base_tweets.tweet_id')))
 
 
 class Hashtag(db.Model):
@@ -94,9 +76,6 @@ class TweetUser(db.Model):
     # __mapper_args__ = {"polymorphic_identity": "tweetuser"}
 
 
-# mapper(TweetUser, tweet_users)
-
-
 class RetweetedUser(db.Model):
     __tablename__ = 'retweeted_users'
     user_id = db.Column(db.BigInteger, db.ForeignKey(
@@ -106,9 +85,6 @@ class RetweetedUser(db.Model):
     # user = db.relationship('User', back_populates='retweeted_users')
     # tweet = db.relationship('BaseTweet', back_populates='retweeted_users')
     # __mapper_args__ = {"polymorphic_identity": "retweetuser"}
-
-
-# mapper(RetweetedUser, retweeted_users)
 
 
 class MentionedUser(db.Model):
@@ -130,26 +106,18 @@ class TweetHashtag(db.Model):
         'hashtags.hashtag'), primary_key=True)
     tweet_id_relationship = db.relationship(BaseTweet, backref='tweet_hashtag')
     hashtag_relationship = db.relationship(Hashtag, backref='tweet_hashtag')
-    # mapper(MentionedUser, mentioned_users)
 
 
 class Database():
-    # engine = db.create_engine('postgresql://vtweet:vtweet!#%@localhost/vtweet')
 
     def __init__(self):
         self.connection = db.engine.connect()
+        db.drop_all()
         db.create_all()
         print("DB Instance created")
         print("Tables created")
 
-    # def create_all(self):
-    #     # Base.metadata.create_all(self.engine)
-    #     db.create_all()
-    #     # db.session.commit()
-
     def generate_create_queries(self, filename='createqueries.sql'):
-        # print(CreateTable(Hashtag.__table__))
-        # print(CreateTable(Hashtag.__table__))
         with open(filename, 'w') as f:
             f.write(CreateTable(Hashtag.__table__).compile(
                 dialect=postgresql.dialect()).__str__())
@@ -178,5 +146,4 @@ class Database():
 
 if __name__ == "__main__":
     database = Database()
-    # database.create_all()
     # database.generate_create_queries()
