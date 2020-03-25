@@ -25,7 +25,6 @@ CREATE TABLE users (
 	verified BOOLEAN, 
 	profile_image_url_https VARCHAR(512), 
 	favourites_count INTEGER, 
-	user_type user_type_enum, 
 	PRIMARY KEY (id)
 )
 
