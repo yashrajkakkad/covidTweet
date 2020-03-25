@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for
-from vTweet.views import insert_tweets
+from vTweet.views import insert_tweets_data
 from vTweet import app
 from vTweet import db
 
@@ -8,7 +8,7 @@ from vTweet import db
 def home():
     if request.method == 'POST':
         query = request.form['query']
-        insert_tweets(query)
+        insert_tweets_data(query)
         # return redirect('/mapdemo')
     return render_template('index.html')
 
