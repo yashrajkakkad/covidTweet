@@ -30,6 +30,15 @@ def insert_tweets_data(query):
     for i, tweet in enumerate(tweepy.Cursor(api.search, q=query, geocode=geocode).items(10)):
         logger.info('TWEET NO. %d', i)
         json_dict = tweet._json
+        logger.info(json_dict['user']['name'])
+        logger.info(json_dict['user']['id'])
+        try:
+            logger.info('RETWEETED USER')
+            logger.info(json_dict['retweeted_status']['user']['id'])
+        except KeyError:
+            pass
+        logger.info('MENTIONED USER/S')
+        logger.info(json_dict['entities']['user_mentions'])
 
         # Hashtags
         logger.info("HASHTAGS")
@@ -75,11 +84,11 @@ def insert_hashtags(json_dict):
                       for i in range(len(hashtags))]
 
     for tag in hashtag_models:
+        logger.info(tag.hashtag)
         db.session.add(tag)
         # TODO: Replace this exception handling mechanism by an SQL trigger
         try:
             db.session.commit()
-            logger.info(tag.hashtag)
         except sqlIntegrityError:
             db.session.rollback()
             pass
@@ -202,6 +211,18 @@ def insert_mentioned_user(json_dict):
     user_mentions = json_dict['entities']['user_mentions']
     for user_mentioned in user_mentions:
         id = user_mentioned['id']
+
+        # Lot of people mention their own account
+        if (id == json_dict['user']['id']):
+            continue
+
+        # And a retweet always counts as a mention
+        try:
+            if (id == json_dict['retweeted_status']['user']['id']):
+                continue
+        except KeyError:
+            pass
+
         try:
             user_obj = api.get_user(id=id)
         except tweepy.error.TweepError:
@@ -212,7 +233,6 @@ def insert_mentioned_user(json_dict):
         db.session.add(user)
         try:
             db.session.commit()
-        # TODO: Add pre-insert trigger in mentioned_user and retweeted_user
         except (sqlIntegrityError, sqlFlushError):
             db.session.rollback()
             pass
