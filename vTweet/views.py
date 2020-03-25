@@ -4,7 +4,6 @@ from decouple import config
 from vTweet.models import *
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError as sqlIntegrityError
-from sqlalchemy.orm.exc import FlushError as sqlFlushError
 from vTweet import db, api
 from datetime import datetime
 
@@ -30,15 +29,6 @@ def insert_tweets_data(query):
     for i, tweet in enumerate(tweepy.Cursor(api.search, q=query, geocode=geocode).items(10)):
         logger.info('TWEET NO. %d', i)
         json_dict = tweet._json
-        logger.info(json_dict['user']['name'])
-        logger.info(json_dict['user']['id'])
-        try:
-            logger.info('RETWEETED USER')
-            logger.info(json_dict['retweeted_status']['user']['id'])
-        except KeyError:
-            pass
-        logger.info('MENTIONED USER/S')
-        logger.info(json_dict['entities']['user_mentions'])
 
         # Hashtags
         logger.info("HASHTAGS")
@@ -233,7 +223,7 @@ def insert_mentioned_user(json_dict):
         db.session.add(user)
         try:
             db.session.commit()
-        except (sqlIntegrityError, sqlFlushError):
+        except sqlIntegrityError:
             db.session.rollback()
             pass
 
