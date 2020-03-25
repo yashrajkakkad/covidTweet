@@ -1,6 +1,5 @@
 from flask import render_template, request, redirect, url_for
 from vTweet.views import get_tweets
-from vTweet.models import Hashtag
 from vTweet import app
 from vTweet import db
 # from sqlalchemy.orm import sessionmaker
