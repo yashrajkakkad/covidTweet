@@ -145,5 +145,6 @@ class Database():
 
 
 if __name__ == "__main__":
-    database = Database()
+    pass
+    # database = Database()
     # database.generate_create_queries()
