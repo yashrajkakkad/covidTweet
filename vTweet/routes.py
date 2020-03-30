@@ -9,6 +9,9 @@ def home():
     if request.method == 'POST':
         query = request.form['query']
         insert_tweets_data(query)
+        # Most popular user
+        pop_user = db.session.query(db.func.most_popular_user()).all()
+        print(pop_user)
         # return redirect('/mapdemo')
     return render_template('index.html')
 
