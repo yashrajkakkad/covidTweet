@@ -11,12 +11,14 @@ LANGUAGE plpgsql;
 
 -- Return the most popular user (tweeted/retweeted)
 CREATE OR REPLACE FUNCTION most_popular_user ()
-    RETURNS RECORD
+    RETURNS TABLE (
+        LIKE users
+    )
     AS $$
 DECLARE
     f_count_tweeted integer;
     f_count_retweeted integer;
-    pop_user RECORD;
+    max_f_count integer;
 BEGIN
     SELECT
         MAX(followers_count) INTO f_count_tweeted
@@ -32,19 +34,23 @@ BEGIN
         retweeted_users
     WHERE
         users.id = retweeted_users.user_id;
+    max_f_count := GREATEST (f_count_tweeted,
+        f_count_retweeted);
+    RETURN QUERY
     SELECT
-        * INTO pop_user
+        *
     FROM
         users
     WHERE
-        users.followers_count = f_count_tweeted
+        users.followers_count = max_f_count
     LIMIT 1;
-    RETURN pop_user;
 END;
 $$
 LANGUAGE plpgsql;
 
 -- Call the function
 SELECT
+    *
+FROM
     most_popular_user ();
 
