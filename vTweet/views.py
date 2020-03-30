@@ -4,6 +4,7 @@ from decouple import config
 from vTweet.models import *
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError as sqlIntegrityError
+from sqlalchemy.orm.exc import FlushError as sqlPKError
 from vTweet import db, api
 from datetime import datetime
 
@@ -25,8 +26,8 @@ def insert_tweets_data(query):
     LAT = 40.712776
     LONG = -74.005974
 
-    geocode = str(LAT) + ',' + str(LONG) + ',1mi'
-    for i, tweet in enumerate(tweepy.Cursor(api.search, q=query, geocode=geocode).items(10)):
+    geocode = str(LAT) + ',' + str(LONG) + ',1000mi'
+    for i, tweet in enumerate(tweepy.Cursor(api.search, q=query, geocode=geocode).items(100)):
         logger.info('TWEET NO. %d', i)
         json_dict = tweet._json
 
@@ -79,7 +80,7 @@ def insert_hashtags(json_dict):
         # TODO: Replace this exception handling mechanism by an SQL trigger
         try:
             db.session.commit()
-        except sqlIntegrityError:
+        except (sqlIntegrityError, sqlPKError):
             db.session.rollback()
             pass
 
@@ -102,7 +103,7 @@ def insert_place(json_dict):
         pass
     try:
         db.session.commit()
-    except sqlIntegrityError:
+    except (sqlIntegrityError, sqlPKError):
         db.session.rollback()
         pass
 
@@ -124,7 +125,7 @@ def insert_tweet(json_dict, place_id):
     try:
         db.session.commit()
         logger.info(tweet.tweet_id)
-    except sqlIntegrityError:
+    except (sqlIntegrityError, sqlPKError):
         db.session.rollback()
         pass
 
@@ -146,7 +147,7 @@ def insert_user(json_dict):
     try:
         db.session.commit()
         logger.info(user.id)
-    except sqlIntegrityError:
+    except (sqlIntegrityError, sqlPKError):
         db.session.rollback()
         pass
 
@@ -156,7 +157,7 @@ def insert_user(json_dict):
     try:
         db.session.commit()
         logger.info(tweet_user.user_id)
-    except sqlIntegrityError:
+    except (sqlIntegrityError, sqlPKError):
         db.session.rollback()
         pass
     logger.info('TWEET USER ADDED')
@@ -180,7 +181,7 @@ def insert_retweeted_user(json_dict):
         db.session.add(user)
         try:
             db.session.commit()
-        except sqlIntegrityError:
+        except (sqlIntegrityError, sqlPKError):
             db.session.rollback()
             pass
 
@@ -190,7 +191,7 @@ def insert_retweeted_user(json_dict):
         db.session.add(retweeted_user)
         try:
             db.session.commit()
-        except sqlIntegrityError:
+        except (sqlIntegrityError, sqlPKError):
             db.session.rollback()
             pass
     except KeyError:
@@ -223,7 +224,7 @@ def insert_mentioned_user(json_dict):
         db.session.add(user)
         try:
             db.session.commit()
-        except sqlIntegrityError:
+        except (sqlIntegrityError, sqlPKError):
             db.session.rollback()
             pass
 
@@ -236,6 +237,6 @@ def insert_tweet_hashtags(json_dict, hashtag_models):
         logger.info(tweet_hashtag.tweet_id)
         try:
             db.session.commit()
-        except sqlIntegrityError:
+        except (sqlIntegrityError, sqlPKError):
             db.session.rollback()
             pass
