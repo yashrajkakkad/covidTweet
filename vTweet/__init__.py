@@ -31,3 +31,8 @@ from vTweet.models import Database
 database = Database()
 
 from vTweet import routes
+
+# Test function
+q = db.session.query(db.func.test_function()).all()
+print(q)
+# Returns [(433,)]
