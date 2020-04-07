@@ -11,6 +11,7 @@ from vTweet import db
 class Hashtag(db.Model):
     __tablename__ = 'hashtags'
     hashtag = db.Column(db.String(50), primary_key=True)
+    frequency = db.Column(db.Integer)
 
 
 class Place(db.Model):
