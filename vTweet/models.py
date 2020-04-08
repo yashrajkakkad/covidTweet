@@ -20,6 +20,7 @@ class Place(db.Model):
     name = db.Column(db.String(50))
     country = db.Column(db.String(50))
     country_code = db.Column(db.String(5))
+    # coordinates = db.relationship("Coordinates", backref='places')
 
 
 class User(db.Model):
@@ -109,6 +110,17 @@ class TweetHashtag(db.Model):
     hashtag_relationship = db.relationship(Hashtag, backref='tweet_hashtag')
 
 
+class Coordinates(db.Model):
+    __tablename__ = "coordinates"
+    place_id = db.Column(db.String(20), db.ForeignKey(
+        'places.place_id'), primary_key=True)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    # place = db.relationship("Place", uselist=False,
+    #                         backref='coordinates')
+    # child = relationship("Child", uselist=False, back_populates="parent")
+
+
 class Database():
 
     def __init__(self):
@@ -142,6 +154,9 @@ class Database():
                 dialect=postgresql.dialect()).__str__())
             f.write('\n')
             f.write(CreateTable(TweetHashtag.__table__).compile(
+                dialect=postgresql.dialect()).__str__())
+            f.write('\n')
+            f.write(CreateTable(Coordinates.__table__).compile(
                 dialect=postgresql.dialect()).__str__())
 
 

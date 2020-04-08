@@ -60,7 +60,7 @@ LANGUAGE plpgsql;
 SELECT
     *
 FROM
-    most_popular_user ();
+    most_popular_users ();
 
 -- Increment Hashtag Frequency (Use this instead of directly inserting to Hashtag table)
 CREATE OR REPLACE PROCEDURE increment_hashtag_frequency (hashtag_name varchar
@@ -140,3 +140,12 @@ SELECT
 FROM
     most_popular_hashtags ('originalhashtag');
 
+-- CREATE OR REPLACE FUNCTION tweets_by_country ()
+--     RETURNS TABLE (
+--         LIKE tbl --Place appropriate table name here
+--     )
+--     AS $$
+-- BEGIN
+-- END;
+-- $$
+-- LANGUAGE plpgsql;

@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError as sqlIntegrityError
 from sqlalchemy.orm.exc import FlushError as sqlPKError
 from vTweet import db, api
 from datetime import datetime
+from geopy.geocoders import Nominatim
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -40,6 +41,11 @@ def insert_tweets_data(query):
         logger.info('PLACE')
         place_id = insert_place(json_dict)
         logger.info('PLACE COMMITTED')
+
+        # Coordinates
+        logger.info('COORDINATES')
+        insert_coordinates(json_dict, place_id)
+        logger.info('COORDINATES COMMITTED')
 
         # Tweets
         logger.info('TWEET')
@@ -98,12 +104,12 @@ def insert_place(json_dict):
         place = Place(place_id=place_id, name=name,
                       country=country, country_code=country_code)
         logger.info(place.name)
-        try:
-            coordinates = json_dict['coordinates']
-            logger.info('Coordinates:', coordinates)
-            logger.info(type(coordinates))
-        except KeyError:
-            pass
+        # try:
+        #     coordinates = json_dict['coordinates']
+        #     logger.info('Coordinates:', coordinates)
+        #     logger.info(type(coordinates))
+        # except KeyError:
+        #     pass
         db.session.add(place)
     except TypeError:
         pass
@@ -114,6 +120,22 @@ def insert_place(json_dict):
         pass
 
     return place_id
+
+
+def insert_coordinates(json_dict, place_id):
+    geolocator = Nominatim(user_agent="vtweet")
+    try:
+        country = json_dict['place']['country']
+        location = geolocator.geocode(country)
+        coordinates = Coordinates(
+            place_id=place_id, latitude=location.latitude, longitude=location.longitude)
+        db.session.add(coordinates)
+    except TypeError:
+        return
+    try:
+        db.session.commit()
+    except (sqlIntegrityError, sqlPKError):
+        db.session.rollback()
 
 
 def insert_tweet(json_dict, place_id):
