@@ -98,6 +98,12 @@ def insert_place(json_dict):
         place = Place(place_id=place_id, name=name,
                       country=country, country_code=country_code)
         logger.info(place.name)
+        try:
+            coordinates = json_dict['coordinates']
+            logger.info('Coordinates:', coordinates)
+            logger.info(type(coordinates))
+        except KeyError:
+            pass
         db.session.add(place)
     except TypeError:
         pass

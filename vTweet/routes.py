@@ -9,7 +9,7 @@ from vTweet import db
 def home():
     if request.method == 'POST':
         query = request.form['query']
-        # insert_tweets_data(query)
+        insert_tweets_data(query)
 
         # Most popular user
         query = text('select * from most_popular_user()')

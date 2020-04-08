@@ -26,8 +26,8 @@ auth = tweepy.OAuthHandler(
     config('CONSUMER_KEY'), config('CONSUMER_SECRET'))
 api = tweepy.API(auth)
 
-# Create all models
-from vTweet.models import Database
-database = Database()
+# Create all models - CANNOT RECREATE AS PROCEDURES/FUNCTIONS ARE NOW DEPENDENT ON TABLES
+# from vTweet.models import Database
+# database = Database()
 
 from vTweet import routes
