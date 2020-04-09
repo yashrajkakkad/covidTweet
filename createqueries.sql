@@ -98,3 +98,12 @@ CREATE TABLE coordinates (
 	PRIMARY KEY (country_code)
 )
 
+
+
+CREATE TABLE intensity (
+	latitude FLOAT NOT NULL, 
+	longitude FLOAT NOT NULL, 
+	intensity FLOAT, 
+	PRIMARY KEY (latitude, longitude)
+)
+

@@ -140,12 +140,54 @@ SELECT
 FROM
     most_popular_hashtags ('originalhashtag');
 
--- CREATE OR REPLACE FUNCTION tweets_by_country ()
---     RETURNS TABLE (
---         LIKE tbl --Place appropriate table name here
---     )
---     AS $$
--- BEGIN
--- END;
--- $$
--- LANGUAGE plpgsql;
+CREATE OR REPLACE FUNCTION tweets_by_country ()
+    RETURNS TABLE (
+        LIKE intensity
+    )
+    AS $$
+DECLARE
+    cur_coordinates CURSOR FOR
+        SELECT
+            coordinates.latitude,
+            coordinates.longitude,
+            COUNT(tweet_id)
+        FROM
+            base_tweets,
+            places,
+            coordinates
+        WHERE
+            places.country_code = coordinates.country_code
+            AND places.place_id = base_tweets.place_id
+        GROUP BY
+            coordinates.country_code;
+    rec_coordinates RECORD;
+BEGIN
+    OPEN cur_coordinates;
+    LOOP
+        FETCH cur_coordinates INTO rec_coordinates;
+        EXIT
+        WHEN NOT FOUND;
+        INSERT INTO intensity
+            VALUES (rec_coordinates.latitude, rec_coordinates.longitude, 1);
+    END LOOP;
+    RETURN QUERY (
+        SELECT
+            * FROM intensity);
+END;
+$$
+LANGUAGE plpgsql;
+
+SELECT
+    coordinates.latitude,
+    coordinates.longitude,
+    COUNT(tweet_id)
+FROM
+    base_tweets,
+    places,
+    coordinates
+WHERE
+    places.country_code = coordinates.country_code
+    AND places.place_id = base_tweets.place_id
+GROUP BY
+    coordinates.country_code;
+

@@ -123,6 +123,13 @@ class Coordinates(db.Model):
     # child = relationship("Child", uselist=False, back_populates="parent")
 
 
+class Intensity(db.Model):
+    __tablename__ = 'intensity'
+    latitude = db.Column(db.Float, primary_key=True)
+    longitude = db.Column(db.Float, primary_key=True)
+    intensity = db.Column(db.Float)
+
+
 class Database():
 
     def __init__(self):
@@ -159,6 +166,9 @@ class Database():
                 dialect=postgresql.dialect()).__str__())
             f.write('\n')
             f.write(CreateTable(Coordinates.__table__).compile(
+                dialect=postgresql.dialect()).__str__())
+            f.write('\n')
+            f.write(CreateTable(Intensity.__table__).compile(
                 dialect=postgresql.dialect()).__str__())
 
 
