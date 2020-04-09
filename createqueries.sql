@@ -1,6 +1,7 @@
 
 CREATE TABLE hashtags (
 	hashtag VARCHAR(50) NOT NULL, 
+	frequency INTEGER, 
 	PRIMARY KEY (hashtag)
 )
 
@@ -11,7 +12,8 @@ CREATE TABLE places (
 	name VARCHAR(50), 
 	country VARCHAR(50), 
 	country_code VARCHAR(5), 
-	PRIMARY KEY (place_id)
+	PRIMARY KEY (place_id), 
+	FOREIGN KEY(country_code) REFERENCES coordinates (country_code)
 )
 
 
@@ -85,5 +87,14 @@ CREATE TABLE tweet_hashtag (
 	PRIMARY KEY (tweet_id, hashtag), 
 	FOREIGN KEY(tweet_id) REFERENCES base_tweets (tweet_id), 
 	FOREIGN KEY(hashtag) REFERENCES hashtags (hashtag)
+)
+
+
+
+CREATE TABLE coordinates (
+	country_code VARCHAR(5) NOT NULL, 
+	latitude FLOAT, 
+	longitude FLOAT, 
+	PRIMARY KEY (country_code)
 )
 

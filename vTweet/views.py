@@ -37,15 +37,15 @@ def insert_tweets_data(query):
         count, hashtag_models = insert_hashtags(json_dict)
         logger.info('%d HASHTAGS COMMITTED', count)
 
+        # Coordinates
+        logger.info('COORDINATES')
+        insert_coordinates(json_dict)
+        logger.info('COORDINATES COMMITTED')
+
         # Place
         logger.info('PLACE')
         place_id = insert_place(json_dict)
         logger.info('PLACE COMMITTED')
-
-        # Coordinates
-        logger.info('COORDINATES')
-        insert_coordinates(json_dict, place_id)
-        logger.info('COORDINATES COMMITTED')
 
         # Tweets
         logger.info('TWEET')
@@ -122,13 +122,14 @@ def insert_place(json_dict):
     return place_id
 
 
-def insert_coordinates(json_dict, place_id):
+def insert_coordinates(json_dict):
     geolocator = Nominatim(user_agent="vtweet")
     try:
         country = json_dict['place']['country']
+        country_code = json_dict['place']['country_code']
         location = geolocator.geocode(country)
         coordinates = Coordinates(
-            place_id=place_id, latitude=location.latitude, longitude=location.longitude)
+            country_code=country_code, latitude=location.latitude, longitude=location.longitude)
         db.session.add(coordinates)
     except TypeError:
         return
