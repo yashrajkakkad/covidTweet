@@ -53,6 +53,7 @@ class BaseTweet(db.Model):
     __tablename__ = 'base_tweets'
     tweet_id = db.Column(db.BigInteger, primary_key=True)
     tweet_id_str = db.Column(db.String(20))
+    tweet_text = db.Column(db.Text)
     source = db.Column(db.String(512))
     favorited = db.Column(db.Boolean)
     retweeted = db.Column(db.Boolean)

@@ -35,6 +35,7 @@ CREATE TABLE users (
 CREATE TABLE base_tweets (
 	tweet_id BIGSERIAL NOT NULL, 
 	tweet_id_str VARCHAR(20), 
+	tweet_text VARCHAR(300), 
 	source VARCHAR(512), 
 	favorited BOOLEAN, 
 	retweeted BOOLEAN, 

@@ -8,6 +8,8 @@ from sqlalchemy.orm.exc import FlushError as sqlPKError
 from vTweet import db, api
 from datetime import datetime
 from geopy.geocoders import Nominatim
+import csv
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -19,6 +21,59 @@ logfile_handler.setFormatter(formatter)
 logger.addHandler(logfile_handler)
 
 
+def fetch_tweet_ids(filename='corona_tweets_21.csv'):
+    with open(filename) as f:
+        reader = csv.reader(f)
+        tweet_ids = [row[0] for row in reader]
+    return tweet_ids
+
+
+def insert_tweets_from_object(tweet):
+    json_dict = tweet._json
+
+    # Hashtags
+    logger.info("HASHTAGS")
+    count, hashtag_models = insert_hashtags(json_dict)
+    logger.info('%d HASHTAGS COMMITTED', count)
+
+    # Coordinates
+    logger.info('COORDINATES')
+    insert_coordinates(json_dict)
+    logger.info('COORDINATES COMMITTED')
+
+    # Place
+    logger.info('PLACE')
+    place_id = insert_place(json_dict)
+    logger.info('PLACE COMMITTED')
+
+    # Tweets
+    logger.info('TWEET')
+    insert_tweet(json_dict, place_id)
+    logger.info('TWEET ADDED')
+
+    # Tweeted User
+    logger.info('OPs OF TWEET')
+    insert_user(json_dict)
+    logger.info('OPs OF TWEET ADDED')
+
+    # Retweeted User
+    logger.info('RETWEETED USER')
+    insert_retweeted_user(json_dict)
+    logger.info('RETWEETED USER ADDED')
+
+    # Mentioned Users
+    logger.info('MENTIONED USER')
+    insert_mentioned_user(json_dict)
+    logger.info('MENTIONED USER ADDED')
+
+    # print(tweet)
+    logger.info('TWEET_HASHTAGS')
+    insert_tweet_hashtags(json_dict, hashtag_models)
+    logger.info('TWEET_HASHTAGS ADDED')
+
+    logger.info('\n\n')
+
+
 def insert_tweets_data(query):
 
     # May not work for Gujarati cities.
@@ -28,7 +83,7 @@ def insert_tweets_data(query):
     LONG = -74.005974
 
     geocode = str(LAT) + ',' + str(LONG) + ',1000mi'
-    for i, tweet in enumerate(tweepy.Cursor(api.search, q=query, geocode=geocode).items(100)):
+    for i, tweet in enumerate(tweepy.Cursor(api.search, q=query).items(10)):
         logger.info('TWEET NO. %d', i)
         json_dict = tweet._json
 
@@ -148,8 +203,8 @@ def insert_tweet(json_dict, place_id):
         possibly_sensitive = json_dict['possibly_sensitive']
     except KeyError:
         possibly_sensitive = False
-    tweet = BaseTweet(tweet_id=json_dict['id'], tweet_id_str=json_dict['id_str'], source=json_dict['source'], favorited=json_dict[
-        'favorited'], retweeted=json_dict['retweeted'], favorite_count=json_dict['favorite_count'], retweet_count=json_dict['retweet_count'], result_type=json_dict['metadata']['result_type'], created_at=created_at, lang=json_dict['lang'], possibly_sensitive=possibly_sensitive, place_id=place_id)
+    tweet = BaseTweet(tweet_id=json_dict['id'], tweet_id_str=json_dict['id_str'], tweet_text=json_dict['text'], source=json_dict['source'], favorited=json_dict[
+        'favorited'], retweeted=json_dict['retweeted'], favorite_count=json_dict['favorite_count'], retweet_count=json_dict['retweet_count'], result_type=None, created_at=created_at, lang=json_dict['lang'], possibly_sensitive=possibly_sensitive, place_id=place_id)
     db.session.add(tweet)
     try:
         db.session.commit()
