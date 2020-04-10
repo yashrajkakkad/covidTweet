@@ -40,9 +40,9 @@ def insert_tweets_from_object(tweet):
     logger.info('%d HASHTAGS COMMITTED', count)
 
     # Coordinates
-    logger.info('COORDINATES')
-    insert_coordinates(json_dict)
-    logger.info('COORDINATES COMMITTED')
+    # logger.info('COORDINATES')
+    # insert_coordinates(json_dict)
+    # logger.info('COORDINATES COMMITTED')
 
     # Place
     logger.info('PLACE')
