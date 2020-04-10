@@ -191,3 +191,84 @@ WHERE
 GROUP BY
     coordinates.country_code;
 
+CREATE OR REPLACE FUNCTION most_retweeted_users ()
+    RETURNS TABLE (
+        LIKE users
+    )
+    AS $$
+DECLARE
+BEGIN
+    RETURN QUERY (
+        SELECT
+            * FROM users ORDER BY followers_count DESC LIMIT 3);
+END;
+$$
+LANGUAGE plpgsql;
+
+-- We have to remove characters, RT, hashtag, mentioned users and extract emojis. PENDING
+CREATE OR REPLACE PROCEDURE remove_special_characters ()
+    AS $$
+DECLARE
+    cur_tweets CURSOR FOR
+        SELECT
+            tweet_text
+        FROM
+            base_tweets;
+    row_tweets RECORD;
+    txt text;
+BEGIN
+    OPEN cur_tweets;
+    LOOP
+        FETCH cur_tweets INTO row_tweets;
+        EXIT
+        WHEN NOT FOUND;
+        txt := regexp_replace(row_tweets.tweet_text, '[^\w]+', ' ', 'g');
+        -- RAISE NOTICE '%', regexp_replace(row_tweets.tweet_text, '[^\w]+', ' ', 'g');
+    END LOOP;
+END;
+$$
+LANGUAGE plpgsql;
+
+CALL remove_special_characters ();
+
+-- One word popular words
+WITH popular_words AS (
+    SELECT
+        word
+    FROM
+        ts_stat('select tweet_text::tsvector from test')
+    WHERE
+        nentry > 1 --> parameter
+        AND NOT word IN ('to', 'the', 'at', 'in', 'a') --> parameter
+)
+SELECT
+    *
+FROM
+    popular_words;
+
+-- Two word popular words
+WITH popular_words AS (
+    SELECT
+        word
+    FROM
+        ts_stat('select tweet_text::tsvector from test')
+    WHERE
+        nentry > 1 --> parameter
+        AND NOT word IN ('to', 'the', 'at', 'in', 'a') --> parameter
+)
+SELECT
+    concat_ws(' ', a1.word, a2.word) phrase,
+    count(*)
+FROM
+    popular_words AS a1
+    CROSS JOIN popular_words AS a2
+    CROSS JOIN test
+WHERE
+    tweet_text ILIKE format('%%%s %s%%', a1.word, a2.word)
+GROUP BY
+    1
+HAVING
+    count(*) > 1 --> parameter
+ORDER BY
+    2 DESC;
+
