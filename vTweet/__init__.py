@@ -12,16 +12,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://vtweet:vtweet!#%@localhost
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# Init dash's app
-dash_external_stylesheets = [dbc.themes.FLATLY]
-dash_frontend = dash.Dash(
-    __name__,
-    server=app,
-    routes_pathname_prefix='/dash_frontend/',
-    external_stylesheets=dash_external_stylesheets
-)
-define_layout(dash_frontend)
-
 auth = tweepy.OAuthHandler(
     config('CONSUMER_KEY'), config('CONSUMER_SECRET'))
 api = tweepy.API(auth)
