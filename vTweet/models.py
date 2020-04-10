@@ -18,10 +18,20 @@ class Place(db.Model):
     __tablename__ = 'places'
     place_id = db.Column(db.String(20), primary_key=True)
     name = db.Column(db.String(50))
-    country = db.Column(db.String(50))
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
     country_code = db.Column(
-        db.String(5), db.ForeignKey('coordinates.country_code'))
+        db.String(5), db.ForeignKey('countries.country_code'))
+   # country_code = db.Column(
+    #     db.String(5), db.ForeignKey('coordinates.country_code'))
     # coordinates = db.relationship("Coordinates", backref='places')
+
+
+class Country(db.Model):
+    __tablename__ = "countries"
+    country_code = db.Column(
+        db.String(5), primary_key=True)
+    country = db.Column(db.String(50))
 
 
 class User(db.Model):
@@ -112,16 +122,16 @@ class TweetHashtag(db.Model):
     hashtag_relationship = db.relationship(Hashtag, backref='tweet_hashtag')
 
 
-class Coordinates(db.Model):
-    __tablename__ = "coordinates"
-    # place_id = db.Column(db.String(20), db.ForeignKey(
-    #     'places.place_id'), primary_key=True)
-    country_code = db.Column(db.String(5), primary_key=True)
-    latitude = db.Column(db.Float)
-    longitude = db.Column(db.Float)
-    # place = db.relationship("Place", uselist=False,
-    #                         backref='coordinates')
-    # child = relationship("Child", uselist=False, back_populates="parent")
+# class Coordinates(db.Model):
+#     __tablename__ = "coordinates"
+#     place_id = db.Column(db.String(20), db.ForeignKey(
+#         'places.place_id'), primary_key=True)
+#     # country_code = db.Column(db.String(5), primary_key=True)
+#     latitude = db.Column(db.Float)
+#     longitude = db.Column(db.Float)
+#     # place = db.relationship("Place", uselist=False,
+#     #                         backref='coordinates')
+#     # child = relationship("Child", uselist=False, back_populates="parent")
 
 
 class Intensity(db.Model):
@@ -166,7 +176,7 @@ class Database():
             f.write(CreateTable(TweetHashtag.__table__).compile(
                 dialect=postgresql.dialect()).__str__())
             f.write('\n')
-            f.write(CreateTable(Coordinates.__table__).compile(
+            f.write(CreateTable(Country.__table__).compile(
                 dialect=postgresql.dialect()).__str__())
             f.write('\n')
             f.write(CreateTable(Intensity.__table__).compile(

@@ -39,5 +39,5 @@ def fetch():
             pickle.dump(status, f)
             # print(type(status))
             # print(status)
-            insert_tweets_from_object(status)
+            # insert_tweets_from_object(status)
     return render_template_string('Hello')

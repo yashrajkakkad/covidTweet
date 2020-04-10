@@ -10,10 +10,11 @@ CREATE TABLE hashtags (
 CREATE TABLE places (
 	place_id VARCHAR(20) NOT NULL, 
 	name VARCHAR(50), 
-	country VARCHAR(50), 
+	latitude FLOAT, 
+	longitude FLOAT, 
 	country_code VARCHAR(5), 
 	PRIMARY KEY (place_id), 
-	FOREIGN KEY(country_code) REFERENCES coordinates (country_code)
+	FOREIGN KEY(country_code) REFERENCES countries (country_code)
 )
 
 
@@ -35,7 +36,7 @@ CREATE TABLE users (
 CREATE TABLE base_tweets (
 	tweet_id BIGSERIAL NOT NULL, 
 	tweet_id_str VARCHAR(20), 
-	tweet_text VARCHAR(300), 
+	tweet_text TEXT, 
 	source VARCHAR(512), 
 	favorited BOOLEAN, 
 	retweeted BOOLEAN, 
@@ -92,10 +93,9 @@ CREATE TABLE tweet_hashtag (
 
 
 
-CREATE TABLE coordinates (
+CREATE TABLE countries (
 	country_code VARCHAR(5) NOT NULL, 
-	latitude FLOAT, 
-	longitude FLOAT, 
+	country VARCHAR(50), 
 	PRIMARY KEY (country_code)
 )
 
