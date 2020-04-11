@@ -178,10 +178,9 @@ END;
 $$
 LANGUAGE plpgsql;
 
-<<<<<<< HEAD
 CREATE OR REPLACE FUNCTION most_popular_tweets ()
     RETURNS TABLE (
-        tweet_id base_tweets.tweet_id%type,
+        tweet_id base_tweets.tweet_id % TYPE,
         screen_name varchar(60)
     )
     AS $$
@@ -204,10 +203,7 @@ SELECT
 FROM
     most_popular_tweets ();
 
--- We have to remove characters, RT, hashtag, mentioned users and extract emojis. PENDING
-=======
 -- We have to remove characters, RT, hashtag, mentioned users and extract emojis (PENDING).
->>>>>>> 060d334... Added functions for calculating sentiment score of tweets
 CREATE OR REPLACE PROCEDURE remove_special_characters ()
     AS $$
 DECLARE

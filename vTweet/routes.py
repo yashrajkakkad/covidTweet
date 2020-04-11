@@ -3,12 +3,9 @@ from sqlalchemy import func
 from vTweet.views import insert_tweets_data, fetch_tweet_ids, insert_tweets_from_object
 from vTweet import app
 from vTweet import db, api
-<<<<<<< HEAD
 import requests
-=======
 import pickle
 from tweepy.error import TweepError
->>>>>>> 67c6f69... Added new tables for word sentiment analysis
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -33,7 +30,8 @@ def home():
     popular_user_results = db.session.execute(
         'SELECT * FROM most_popular_users();')
 
-    popular_tweet_results = db.session.execute('SELECT * FROM most_popular_tweets();')
+    popular_tweet_results = db.session.execute(
+        'SELECT * FROM most_popular_tweets();')
     popular_tweet_html = []
     for res in popular_tweet_results:
         print(res)
