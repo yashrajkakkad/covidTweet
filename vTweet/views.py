@@ -29,9 +29,18 @@ def fetch_tweet_ids(filename='corona_tweets_21.csv'):
 
 
 def fetch_tweet_data():
+    existing_tweet_ids = []
+    with open('tweets.pickle', 'rb') as f:
+        while True:
+            try:
+                status = pickle.load(f)
+                existing_tweet_ids.append(status.tweet_id)
+            except EOFError:
+                break
     tweet_ids = fetch_tweet_ids()
+    tweet_ids = [x for x in tweet_ids if x not in existing_tweet_ids]
     chunks = [tweet_ids[x:x + 100] for x in range(0, len(tweet_ids), 100)]
-    f = open('tweets.pickle', 'wb')
+    f = open('tweets.pickle', 'ab')
     for chunk in chunks:
         statuses = api.statuses_lookup(chunk, include_entities=True)
         for status in statuses:
