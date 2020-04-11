@@ -249,6 +249,7 @@ BEGIN
         FETCH cur_tweets INTO row_tweets;
         EXIT
         WHEN NOT FOUND;
+        -- URL: \m((https?://)(\w+)\.(\S+))
         txt := regexp_replace(row_tweets.tweet_text, '[^\w]+', ' ', 'g');
         -- RAISE NOTICE '%', regexp_replace(row_tweets.tweet_text, '[^\w]+', ' ', 'g');
     END LOOP;
@@ -261,12 +262,15 @@ CALL remove_special_characters ();
 -- One word popular words
 WITH popular_words AS (
     SELECT
-        word
+        word,
+        nentry
     FROM
-        ts_stat('select tweet_text::tsvector from test')
+        ts_stat('select to_tsvector(''english'', tweet_text) from base_tweets') -- 'english' removes the stop words by default. Not sure about its coverage
     WHERE
         nentry > 1 --> parameter
-        AND NOT word IN ('to', 'the', 'at', 'in', 'a') --> parameter
+        -- AND NOT word IN ('to', 'the', 'at', 'in', 'a') --> parameter
+    ORDER BY
+        nentry DESC
 )
 SELECT
     *
@@ -278,10 +282,10 @@ WITH popular_words AS (
     SELECT
         word
     FROM
-        ts_stat('select tweet_text::tsvector from test')
+        ts_stat('select to_tsvector(''english'', tweet_text) from base_tweets')
     WHERE
         nentry > 1 --> parameter
-        AND NOT word IN ('to', 'the', 'at', 'in', 'a') --> parameter
+        -- AND NOT word IN ('to', 'the', 'at', 'in', 'a') --> parameter
 )
 SELECT
     concat_ws(' ', a1.word, a2.word) phrase,
