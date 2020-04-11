@@ -207,6 +207,31 @@ END;
 $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION most_popular_tweets ()
+    RETURNS TABLE (
+        tweet_id base_tweets.tweet_id%type,
+        screen_name varchar(60)
+    )
+    AS $$
+BEGIN
+    RETURN QUERY (
+        SELECT
+            base_tweets.tweet_id, users.screen_name FROM base_tweets, users, tweet_users
+        WHERE
+            users.id = tweet_users.user_id
+            AND base_tweets.tweet_id = tweet_users.tweet_id ORDER BY base_tweets.favorite_count DESC LIMIT 10);
+END;
+$$
+LANGUAGE plpgsql;
+
+-- Test the function
+DROP FUNCTION most_popular_tweets;
+
+SELECT
+    *
+FROM
+    most_popular_tweets ();
+
 -- We have to remove characters, RT, hashtag, mentioned users and extract emojis. PENDING
 CREATE OR REPLACE PROCEDURE remove_special_characters ()
     AS $$

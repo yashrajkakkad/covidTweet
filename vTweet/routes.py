@@ -3,6 +3,7 @@ from sqlalchemy import func
 from vTweet.views import insert_tweets_data, fetch_tweet_ids, insert_tweets_from_object
 from vTweet import app
 from vTweet import db, api
+import requests
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -27,8 +28,20 @@ def home():
     popular_user_results = db.session.execute(
         'SELECT * FROM most_popular_users();')
 
+    popular_tweet_results = db.session.execute('SELECT * FROM most_popular_tweets();')
+    popular_tweet_html = []
+    for res in popular_tweet_results:
+        print(res)
+        # print('https://twitter.com/{}/status/{}'.format(res[1], res[0]))
+        r = requests.get('https://publish.twitter.com/oembed', params={
+            'url': 'https://twitter.com/{}/status/{}'.format(res[1], res[0])
+        })
+        # print(type(r))
+        # print(r.json())
+        popular_tweet_html.append(r.json()['html'])
+        # print(r.json()['html'])
     return render_template('index.html', hashtag_results=hashtag_results, heatmap_results=heatmap_results,
-                           popular_user_results=popular_user_results)
+                           popular_user_results=popular_user_results, popular_tweet_html=popular_tweet_html)
 
 
 @app.route('/mapdemo', methods=['GET'])
