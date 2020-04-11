@@ -9,7 +9,7 @@ from vTweet import db, api
 from datetime import datetime
 from geopy.geocoders import Nominatim
 import csv
-
+import pickle
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -28,6 +28,29 @@ def fetch_tweet_ids(filename='corona_tweets_21.csv'):
     return tweet_ids
 
 
+def fetch_tweet_data():
+    tweet_ids = fetch_tweet_ids()
+    chunks = [tweet_ids[x:x + 100] for x in range(0, len(tweet_ids), 100)]
+    f = open('tweets.pickle', 'wb')
+    for chunk in chunks:
+        statuses = api.statuses_lookup(chunk, include_entities=True)
+        for status in statuses:
+            pickle.dump(status, f)
+            # print(type(status))
+            # print(status)
+            # insert_tweets_from_object(status)
+
+
+def insert_tweet_data():
+    with open('tweets.pickle', 'rb') as f:
+        while True:
+            try:
+                status = pickle.load(f)
+                insert_tweets_from_object(status)
+            except EOFError:
+                return
+
+
 def insert_tweets_from_object(tweet):
     json_dict = tweet._json
 
@@ -40,9 +63,9 @@ def insert_tweets_from_object(tweet):
     logger.info('%d HASHTAGS COMMITTED', count)
 
     # Coordinates
-    logger.info('COORDINATES')
-    insert_coordinates(json_dict)
-    logger.info('COORDINATES COMMITTED')
+    # logger.info('COORDINATES')
+    # insert_coordinates(json_dict)
+    # logger.info('COORDINATES COMMITTED')
 
     # Place
     logger.info('PLACE')
@@ -140,7 +163,10 @@ def insert_hashtags(json_dict):
 
     for tag in hashtag_models:
         logger.info(tag.hashtag)
-        db.session.add(tag)
+        db.session.execute(
+            "CALL increment_hashtag_frequency(\'{}\')".format(tag.hashtag))
+
+        # db.session.add(tag)
         # TODO: Replace this exception handling mechanism by an SQL trigger
         try:
             db.session.commit()

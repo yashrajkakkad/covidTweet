@@ -94,7 +94,7 @@ LANGUAGE plpgsql;
 CALL increment_hashtag_frequency ('somehashtag');
 
 -- Most popular hashtags
-CREATE OR REPLACE FUNCTION most_popular_hashtags (query varchar)
+CREATE OR REPLACE FUNCTION most_popular_hashtags ()
     RETURNS TABLE (
         LIKE hashtags
     )
@@ -102,34 +102,34 @@ CREATE OR REPLACE FUNCTION most_popular_hashtags (query varchar)
 DECLARE
 BEGIN
     --- If the query itself is a hashtag, remove it from the most popular hashtags
-    IF query LIKE '#%' THEN
-        query := SUBSTRING(query, 2, length(query) - 1);
-        RETURN QUERY
-        SELECT
-            *
-        FROM
-            hashtags
-        EXCEPT (
-            SELECT
-                *
-            FROM
-                hashtags
-            WHERE
-                hashtag = query)
+    -- IF query LIKE '#%' THEN
+    --     query := SUBSTRING(query, 2, length(query) - 1);
+    --     RETURN QUERY
+    --     SELECT
+    --         *
+    --     FROM
+    --         hashtags
+    --     EXCEPT (
+    --         SELECT
+    --             *
+    --         FROM
+    --             hashtags
+    --         WHERE
+    --             hashtag = query)
+    -- ORDER BY
+    --     frequency DESC
+    -- LIMIT 10;
+    --     --- Otherwise, just return the most popular hashtags
+    -- ELSE
+    RETURN QUERY
+    SELECT
+        *
+    FROM
+        hashtags
     ORDER BY
         frequency DESC
-    LIMIT 5;
-        --- Otherwise, just return the most popular hashtags
-    ELSE
-        RETURN QUERY
-        SELECT
-            *
-        FROM
-            hashtags
-        ORDER BY
-            frequency DESC
-        LIMIT 5;
-    END IF;
+    LIMIT 10;
+    -- END IF;
 END;
 $$
 LANGUAGE plpgsql;
@@ -200,7 +200,7 @@ DECLARE
 BEGIN
     RETURN QUERY (
         SELECT
-            * FROM users ORDER BY followers_count DESC LIMIT 3);
+            * FROM users ORDER BY followers_count DESC LIMIT 10);
 END;
 $$
 LANGUAGE plpgsql;

@@ -11,7 +11,7 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="/static/css/bootstrap.min.css"
+      href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
     />
     <script
       src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
@@ -41,6 +41,8 @@
       integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
       crossorigin=""
     ></script>
+    <script src="{{ url_for('static', filename='js/leaflet-heat.js') }}"></script>
+
     <!-- Demo JS script -->
     <!-- <script type="text/javascript" src="/static/js/demo.js"></script> -->
     <!-- {% block scripts %}{% endblock %} -->
