@@ -56,12 +56,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
--- Call the function
-SELECT
-    *
-FROM
-    most_popular_users ();
-
 -- Increment Hashtag Frequency (Use this instead of directly inserting to Hashtag table)
 CREATE OR REPLACE PROCEDURE increment_hashtag_frequency (hashtag_name varchar
 )
@@ -89,9 +83,6 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
-
--- Call the procedure
-CALL increment_hashtag_frequency ('somehashtag');
 
 -- Most popular hashtags
 CREATE OR REPLACE FUNCTION most_popular_hashtags ()
@@ -134,12 +125,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
--- Call the function
-SELECT
-    *
-FROM
-    most_popular_hashtags ('originalhashtag');
-
 CREATE OR REPLACE FUNCTION heatmap_input ()
     RETURNS TABLE (
         LIKE intensity
@@ -176,20 +161,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
-SELECT
-    coordinates.latitude,
-    coordinates.longitude,
-    COUNT(tweet_id)
-FROM
-    base_tweets,
-    places,
-    coordinates
-WHERE
-    places.country_code = coordinates.country_code
-    AND places.place_id = base_tweets.place_id
-GROUP BY
-    coordinates.country_code;
-
 CREATE OR REPLACE FUNCTION most_popular_users ()
     RETURNS TABLE (
         name varchar(60),
@@ -207,6 +178,7 @@ END;
 $$
 LANGUAGE plpgsql;
 
+<<<<<<< HEAD
 CREATE OR REPLACE FUNCTION most_popular_tweets ()
     RETURNS TABLE (
         tweet_id base_tweets.tweet_id%type,
@@ -233,11 +205,15 @@ FROM
     most_popular_tweets ();
 
 -- We have to remove characters, RT, hashtag, mentioned users and extract emojis. PENDING
+=======
+-- We have to remove characters, RT, hashtag, mentioned users and extract emojis (PENDING).
+>>>>>>> 060d334... Added functions for calculating sentiment score of tweets
 CREATE OR REPLACE PROCEDURE remove_special_characters ()
     AS $$
 DECLARE
     cur_tweets CURSOR FOR
         SELECT
+            tweet_id,
             tweet_text
         FROM
             base_tweets;
@@ -249,15 +225,66 @@ BEGIN
         FETCH cur_tweets INTO row_tweets;
         EXIT
         WHEN NOT FOUND;
-        -- URL: \m((https?://)(\w+)\.(\S+))
-        txt := regexp_replace(row_tweets.tweet_text, '[^\w]+', ' ', 'g');
-        -- RAISE NOTICE '%', regexp_replace(row_tweets.tweet_text, '[^\w]+', ' ', 'g');
+        -- RT/FAV
+        txt := regexp_replace(row_tweets.tweet_text, '^(RT|FAV)', '', 'gi');
+        -- URL
+        txt := regexp_replace(txt, '\m((https?://)(\w+)\.(\S+))', ' ', 'gi');
+        -- User mentions
+        txt := regexp_replace(txt, '@\w*', ' ', 'gi');
+        -- Hashtags and other special characters (except apostrophe)
+        txt := regexp_replace(txt, '[^\w''\s]', ' ', 'gi');
+        -- Remove apostrophe and the next letter
+        -- NOTE: REMOVE THE EXTRA SPACE IN REGEX PATTERN. FORMATTER DOES THIS BY DEFAULT
+        txt := regexp_replace(txt, '' '\w', ' ', 'gi');
+        -- Apparently, colons get left out
+        txt := regexp_replace(txt, ':', ' ', 'gi');
+        -- Remove extra spaces in the start and end
+        txt := regexp_replace(txt, '^\s+', '', 'gi');
+        txt := regexp_replace(txt, '\s+$', '', 'gi');
+        EXECUTE 'INSERT INTO tweet_word_sentiment select $1, unnest(tsvector_to_array(to_tsvector(''simple'', $2)))'
+        USING row_tweets.tweet_id,
+        txt;
     END LOOP;
 END;
 $$
 LANGUAGE plpgsql;
 
-CALL remove_special_characters ();
+CREATE OR REPLACE PROCEDURE calculate_word_score ()
+    AS $$
+DECLARE
+    cur_words CURSOR FOR
+        SELECT
+            word,
+            score
+        FROM
+            tweet_word_sentiment;
+    row_words RECORD;
+    word_score integer;
+BEGIN
+    OPEN cur_words;
+    LOOP
+        FETCH cur_words INTO row_words;
+        EXIT
+        WHEN NOT FOUND;
+        SELECT
+            score INTO word_score
+        FROM
+            word_scores
+        WHERE
+            word_scores.word = row_words.word;
+        IF word_score IS NULL THEN
+            word_score := 0;
+        END IF;
+        UPDATE
+            tweet_word_sentiment
+        SET
+            score = word_score
+        WHERE
+            word = row_words.word;
+    END LOOP;
+END;
+$$
+LANGUAGE plpgsql;
 
 -- One word popular words
 WITH popular_words AS (
