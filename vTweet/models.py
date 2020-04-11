@@ -145,7 +145,7 @@ class Database():
 
     def __init__(self):
         self.connection = db.engine.connect()
-        db.drop_all()
+        # db.drop_all()
         db.create_all()
         print("DB Instance created")
         print("Tables created")

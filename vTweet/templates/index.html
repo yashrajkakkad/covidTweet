@@ -41,84 +41,101 @@
       ).addTo(mymap);
       var heat = L.heatLayer(
         [
-          [50.5, 30.5, 1], // lat, lng, intensity
-          [23, 72, 1],
-          [25, 77, 1],
-          [51.505, -0.09, 1],
+          {% for res in heatmap_results %}
+            [{{res[0]}}, {{res[1]}}, {{res[2]}}],
+          {% endfor %}
         ],
+        {% raw %}
         { radius: 25, maxZoom: 3 }
+       {% endraw %}
       ).addTo(mymap);
     </script>
   </div>
+  <div class="container">
+    <h3>
+      Hashtags
+      <small class="text-muted">Most popular ones with their frequency</small>
+    </h3>
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Hashtag</th>
+          <th scope="col">#</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for res in hashtag_results %}
+        <tr>
+          <th scope="row">{{res[0]}}</th>
+          <td>{{res[1]}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="container">
+    <h3>
+      Popular users
+      <small class="text-muted">in terms of followers count</small>
+    </h3>
+    <div class="row">
+            {% for res in popular_user_results %}
 
-  <!-- <form method="POST">
-      <div class="form-group">
-        <label for="query">Trending topics</label>
-        <input type="text" class="form-control" id="query" name="query" placeholder="Eg. covid19" />
-      </div>
-      <button type="submit" class="btn btn-primary" id="submitBtn">
-        Submit
-      </button>
-      <input class="btn btn-primary" id="clearBox" type="reset" value="Reset" />
-    </form>
-    <br /> -->
-
-  <!-- {% block map %}{% endblock %} -->
-  <!-- <div id="map" style="width: 900px; height: 580px"></div>
-    <script>
-      // Creating map options
-      var mapOptions = {
-        center: [23.037392, 72.552182],
-        zoom: 17
-      };
-
-      // Creating a map object
-      var map = new L.map("map", mapOptions);
-
-      var mapboxAccessToken =
-        "sk.eyJ1IjoicHJheWFncyIsImEiOiJjazg0a201MWEwbDdhM21vZGgwMjlldmVtIn0.4DkYE0PvC2ueU9kYLZV7fw";
-
-      // L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-      //   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      //   maxZoom: 18,
-      //   id: 'mapbox/streets-v11',
-      //   tileSize: 512,
-      //   zoomOffset: -1,
-      //   accessToken: mapboxAccessToken
-      // }).addTo(map);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
-
-      L.marker([23.037392, 72.552182])
-        .bindPopup(
-          '<a href="' +
-            "https://ahduni.edu.in/seas/" +
-            '" target="_blank">' +
-            "SEAS, Ahmedabad University" +
-            "</a>"
-        )
-        .addTo(map);
-    </script> -->
-
-  <!-- 16:9 aspect ratio -->
-  <!-- <div class="embed-responsive embed-responsive-16by9">
-      <iframe class="embed-responsive-item" src="http://127.0.0.1:5000/dash_frontend"></iframe>
-    </div> -->
-
-  <!-- <hr class="mt-0 mb-4" />
-    <div class="mt-10"></div>
-    <div class="card">
-      <div class="card-header">
-        <h3>How to use?</h3>
+    <div class="card col-12 col-md-6 col-lg-4" style="width: 18rem;">
+      <img src="{{res[3]}}" class="card-img-top"/>
+      <div class="card-body">
+        <h5 class="card-title">{{res[0]}}</h5>
+        <p class="card-text">
+           @{{res[1]}}
+        </p>
       </div>
       <div class="card-body">
-        <p>GG</p>
+        <p>Followers Count: {{ res[2] }}</p>
       </div>
-    </div> -->
+    </div>
+    {% endfor %}
+    </div>
+  </div>
+{#  <!-- {% block map %}{% endblock %} -->#}
+{#  <!-- <div id="map" style="width: 900px; height: 580px"></div>#}
+{#    <script>#}
+{#      // Creating map options#}
+{#      var mapOptions = {#}
+{#        center: [23.037392, 72.552182],#}
+{#        zoom: 17#}
+{#      };#}
+{##}
+{#      // Creating a map object#}
+{#      var map = new L.map("map", mapOptions);#}
+{##}
+{#      var mapboxAccessToken =#}
+{#        "sk.eyJ1IjoicHJheWFncyIsImEiOiJjazg0a201MWEwbDdhM21vZGgwMjlldmVtIn0.4DkYE0PvC2ueU9kYLZV7fw";#}
+{##}
+{#      // L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {#}
+{#      //   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',#}
+{#      //   maxZoom: 18,#}
+{#      //   id: 'mapbox/streets-v11',#}
+{#      //   tileSize: 512,#}
+{#      //   zoomOffset: -1,#}
+{#      //   accessToken: mapboxAccessToken#}
+{#      // }).addTo(map);#}
+{##}
+{#      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {#}
+{#        maxZoom: 19,#}
+{#        attribution:#}
+{#          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'#}
+{#      }).addTo(map);#}
+{##}
+{#      L.marker([23.037392, 72.552182])#}
+{#        .bindPopup(#}
+{#          '<a href="' +#}
+{#            "https://ahduni.edu.in/seas/" +#}
+{#            '" target="_blank">' +#}
+{#            "SEAS, Ahmedabad University" +#}
+{#            "</a>"#}
+{#        )#}
+{#        .addTo(map);#}
+{#    </script> -->#}
 </body>
 
 {% endblock %}

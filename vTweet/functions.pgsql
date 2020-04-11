@@ -140,7 +140,7 @@ SELECT
 FROM
     most_popular_hashtags ('originalhashtag');
 
-CREATE OR REPLACE FUNCTION tweets_by_country ()
+CREATE OR REPLACE FUNCTION heatmap_input ()
     RETURNS TABLE (
         LIKE intensity
     )
@@ -148,20 +148,19 @@ CREATE OR REPLACE FUNCTION tweets_by_country ()
 DECLARE
     cur_coordinates CURSOR FOR
         SELECT
-            coordinates.latitude,
-            coordinates.longitude,
+            latitude,
+            longitude,
             COUNT(tweet_id)
         FROM
             base_tweets,
-            places,
-            coordinates
+            places
         WHERE
-            places.country_code = coordinates.country_code
-            AND places.place_id = base_tweets.place_id
+            places.place_id = base_tweets.place_id
         GROUP BY
-            coordinates.country_code;
+            places.place_id;
     rec_coordinates RECORD;
 BEGIN
+    DELETE FROM intensity;
     OPEN cur_coordinates;
     LOOP
         FETCH cur_coordinates INTO rec_coordinates;
@@ -191,16 +190,19 @@ WHERE
 GROUP BY
     coordinates.country_code;
 
-CREATE OR REPLACE FUNCTION most_retweeted_users ()
+CREATE OR REPLACE FUNCTION most_popular_users ()
     RETURNS TABLE (
-        LIKE users
+        name varchar(60),
+        screen_name varchar(60),
+        followers_count integer,
+        profile_image_url_https varchar(512)
     )
     AS $$
 DECLARE
 BEGIN
     RETURN QUERY (
         SELECT
-            * FROM users ORDER BY followers_count DESC LIMIT 10);
+            users.name, users.screen_name, users.followers_count, users.profile_image_url_https FROM users ORDER BY followers_count DESC LIMIT 10);
 END;
 $$
 LANGUAGE plpgsql;

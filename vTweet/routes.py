@@ -19,17 +19,21 @@ def home():
 
         # return redirect('/mapdemo')
     # result = db.session.query(func.public.most_popular_hashtags()).all()
-    result = db.session.execute('SELECT * FROM most_popular_hashtags();')
-    print(type(result))
-    for res in result:
-        print(res)
-    return render_template('index.html')
+    hashtag_results = db.session.execute(
+        'SELECT * FROM most_popular_hashtags();')
+
+    heatmap_results = db.session.execute('SELECT * FROM heatmap_input();')
+
+    popular_user_results = db.session.execute(
+        'SELECT * FROM most_popular_users();')
+
+    return render_template('index.html', hashtag_results=hashtag_results, heatmap_results=heatmap_results,
+                           popular_user_results=popular_user_results)
 
 
 @app.route('/mapdemo', methods=['GET'])
 def renderMap():
     return render_template('map.html')
-
 
 # @app.route('/fetch')
 # def fetch():

@@ -210,7 +210,7 @@ def insert_place(json_dict):
         #     pass
         db.session.add(place)
         db.session.add(country)
-    except TypeError:
+    except (TypeError, AttributeError) as e:
         pass
     try:
         db.session.commit()
