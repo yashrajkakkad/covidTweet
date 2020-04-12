@@ -237,7 +237,7 @@ BEGIN
         -- Remove extra spaces in the start and end
         txt := regexp_replace(txt, '^\s+', '', 'gi');
         txt := regexp_replace(txt, '\s+$', '', 'gi');
-        EXECUTE 'INSERT INTO tweet_word_sentiment select $1, unnest(tsvector_to_array(to_tsvector(''simple'', $2)))'
+        EXECUTE 'INSERT INTO tweet_word select $1, unnest(tsvector_to_array(to_tsvector(''simple'', $2)))'
         USING row_tweets.tweet_id,
         txt;
     END LOOP;
@@ -247,40 +247,84 @@ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE calculate_word_score ()
     AS $$
-DECLARE
-    cur_words CURSOR FOR
-        SELECT
-            word,
-            score
-        FROM
-            tweet_word_sentiment;
-    row_words RECORD;
-    word_score integer;
 BEGIN
-    OPEN cur_words;
-    LOOP
-        FETCH cur_words INTO row_words;
-        EXIT
-        WHEN NOT FOUND;
-        SELECT
-            score INTO word_score
-        FROM
-            word_scores
-        WHERE
-            word_scores.word = row_words.word;
-        IF word_score IS NULL THEN
-            word_score := 0;
-        END IF;
-        UPDATE
-            tweet_word_sentiment
-        SET
-            score = word_score
-        WHERE
-            word = row_words.word;
-    END LOOP;
+    INSERT INTO tweet_word_sentiment
+    SELECT
+        tweet_word.tweet_id,
+        tweet_word.word,
+        word_sentiment.score
+    FROM
+        tweet_word
+    LEFT JOIN word_sentiment ON tweet_word.word = word_sentiment.word
 END;
 $$
-LANGUAGE plpgsql;
+LANGUAGE sql;
+
+WITH most_positive_tweets AS (
+    SELECT
+        *
+    FROM
+        base_tweets
+    WHERE
+        base_tweets.tweet_id IN (
+            SELECT
+                tweet_word_sentiment.tweet_id
+            FROM
+                tweet_word_sentiment
+            GROUP BY
+                tweet_word_sentiment.tweet_id,
+                word
+            ORDER BY
+                sum(score) DESC
+            LIMIT 5))
+SELECT
+    tweet_id,
+    tweet_text
+FROM
+    most_positive_tweets;
+
+WITH most_negative_tweets AS (
+    SELECT
+        *
+    FROM
+        base_tweets
+    WHERE
+        base_tweets.tweet_id IN (
+            SELECT
+                tweet_word_sentiment.tweet_id
+            FROM
+                tweet_word_sentiment
+            GROUP BY
+                tweet_word_sentiment.tweet_id,
+                word
+            ORDER BY
+                sum(score)
+            LIMIT 5))
+SELECT
+    tweet_id,
+    tweet_text
+FROM
+    most_negative_tweets;
+
+WITH most_positive_tweets AS (
+    SELECT
+        *
+    FROM
+        base_tweets
+    WHERE
+        base_tweets.tweet_id = (
+            SELECT
+                tweet_id
+            FROM
+                tweet_word_sentiment
+            ORDER BY
+                sum(score) DESC
+            LIMIT 5))
+SELECT
+    tweet_id,
+    tweet_text
+FROM
+    most_positive_tweets;
 
 -- One word popular words
 WITH popular_words AS (

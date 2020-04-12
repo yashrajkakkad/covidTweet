@@ -147,6 +147,13 @@ class WordSentiment(db.Model):
     score = db.Column(db.Integer)
 
 
+class TweetWord(db.Model):
+    __tablename__ = 'tweet_word'
+    tweet_id = db.Column(db.BigInteger, db.ForeignKey(
+        'base_tweets.tweet_id'), primary_key=True)
+    word = db.Column(db.Text, primary_key=True)
+
+
 class TweetWordSentiment(db.Model):
     __tablename__ = 'tweet_word_sentiment'
     tweet_id = db.Column(db.BigInteger, db.ForeignKey(
