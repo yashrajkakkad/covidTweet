@@ -4,6 +4,8 @@ from vTweet.views import insert_tweets_data, fetch_tweet_ids, insert_tweets_from
 from vTweet import app
 from vTweet import db, api
 import requests
+import pickle
+from tweepy.error import TweepError
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -28,7 +30,8 @@ def home():
     popular_user_results = db.session.execute(
         'SELECT * FROM most_popular_users();')
 
-    popular_tweet_results = db.session.execute('SELECT * FROM most_popular_tweets();')
+    popular_tweet_results = db.session.execute(
+        'SELECT * FROM most_popular_tweets();')
     popular_tweet_html = []
     for res in popular_tweet_results:
         print(res)
@@ -38,7 +41,11 @@ def home():
         })
         # print(type(r))
         # print(r.json())
-        popular_tweet_html.append(r.json()['html'])
+        try:
+            popular_tweet_html.append(r.json()['html'].replace(
+                'twitter-tweet', 'twitter-tweet tw-align-center'))
+        except KeyError:  # Some accounts have gone private now. Can be made into a trigger possibly
+            pass
         # print(r.json()['html'])
     return render_template('index.html', hashtag_results=hashtag_results, heatmap_results=heatmap_results,
                            popular_user_results=popular_user_results, popular_tweet_html=popular_tweet_html)
@@ -48,16 +55,21 @@ def home():
 def renderMap():
     return render_template('map.html')
 
-# @app.route('/fetch')
-# def fetch():
-#     tweet_ids = fetch_tweet_ids()
-#     chunks = [tweet_ids[x:x + 100] for x in range(0, len(tweet_ids), 100)]
-#     f = open('tweets.pickle', 'wb')
-#     for chunk in chunks:
-#         statuses = api.statuses_lookup(chunk, include_entities=True)
-#         for status in statuses:
-#             pickle.dump(status, f)
-#             # print(type(status))
-#             # print(status)
-#             # insert_tweets_from_object(status)
-#     return render_template_string('Hello')
+
+@app.route('/fetch')
+def fetch():
+    tweet_ids = fetch_tweet_ids()
+    chunks = [tweet_ids[x:x + 100] for x in range(0, len(tweet_ids), 100)]
+    f = open('tweets.pickle', 'ab')
+    for i, chunk in enumerate(chunks):
+        try:
+            statuses = api.statuses_lookup(chunk, include_entities=True)
+            for status in statuses:
+                pickle.dump(status, f)
+                # print(type(status))
+                # print(status)
+                # insert_tweets_from_object(status)
+        except TweepError:
+            pass
+        print(i)
+    return render_template_string('All tweets fetched into the pickle file')

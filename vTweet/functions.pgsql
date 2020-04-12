@@ -56,12 +56,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
--- Call the function
-SELECT
-    *
-FROM
-    most_popular_users ();
-
 -- Increment Hashtag Frequency (Use this instead of directly inserting to Hashtag table)
 CREATE OR REPLACE PROCEDURE increment_hashtag_frequency (hashtag_name varchar
 )
@@ -89,9 +83,6 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
-
--- Call the procedure
-CALL increment_hashtag_frequency ('somehashtag');
 
 -- Most popular hashtags
 CREATE OR REPLACE FUNCTION most_popular_hashtags ()
@@ -134,12 +125,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
--- Call the function
-SELECT
-    *
-FROM
-    most_popular_hashtags ('originalhashtag');
-
 CREATE OR REPLACE FUNCTION heatmap_input ()
     RETURNS TABLE (
         LIKE intensity
@@ -176,25 +161,11 @@ END;
 $$
 LANGUAGE plpgsql;
 
-SELECT
-    coordinates.latitude,
-    coordinates.longitude,
-    COUNT(tweet_id)
-FROM
-    base_tweets,
-    places,
-    coordinates
-WHERE
-    places.country_code = coordinates.country_code
-    AND places.place_id = base_tweets.place_id
-GROUP BY
-    coordinates.country_code;
-
 CREATE OR REPLACE FUNCTION most_popular_users ()
     RETURNS TABLE (
         name varchar(60),
         screen_name varchar(60),
-        followers_count integer,
+        followers_count varchar,
         profile_image_url_https varchar(512)
     )
     AS $$
@@ -202,10 +173,24 @@ DECLARE
 BEGIN
     RETURN QUERY (
         SELECT
-            users.name, users.screen_name, users.followers_count, users.profile_image_url_https FROM users ORDER BY followers_count DESC LIMIT 10);
+            users.name, users.screen_name, convert_to_human_readable (users.followers_count), users.profile_image_url_https FROM users ORDER BY users.followers_count DESC LIMIT 10);
 END;
 $$
 LANGUAGE plpgsql;
+
+-- Convert follower count to human readable
+CREATE OR REPLACE FUNCTION convert_to_human_readable (n integer)
+    RETURNS varchar
+    AS $$
+import math
+from decimal import Decimal
+millnames = ['', 'k', 'M', 'B', 'T', 'P', 'E', 'Z', 'Y']
+x = float(n)
+millidx = max(0, min(len(millnames) - 1, int(math.floor(0 if x == 0 else math.log10(abs(x)) / 3))))
+result = '{:.{precision}f}'.format(x / 10**(3 * millidx), precision=1)
+return '{0}{dx}'.format(result, dx=millnames[millidx])
+$$
+LANGUAGE plpython3u;
 
 CREATE OR REPLACE FUNCTION most_popular_tweets ()
     RETURNS TABLE (
@@ -227,12 +212,18 @@ LANGUAGE plpgsql;
 -- Test the function
 DROP FUNCTION most_popular_tweets;
 
--- We have to remove characters, RT, hashtag, mentioned users and extract emojis. PENDING
+SELECT
+    *
+FROM
+    most_popular_tweets ();
+
+-- We have to remove characters, RT, hashtag, mentioned users and extract emojis (PENDING).
 CREATE OR REPLACE PROCEDURE remove_special_characters ()
     AS $$
 DECLARE
     cur_tweets CURSOR FOR
         SELECT
+            tweet_id,
             tweet_text
         FROM
             base_tweets;
@@ -244,24 +235,123 @@ BEGIN
         FETCH cur_tweets INTO row_tweets;
         EXIT
         WHEN NOT FOUND;
-        txt := regexp_replace(row_tweets.tweet_text, '[^\w]+', ' ', 'g');
-        -- RAISE NOTICE '%', regexp_replace(row_tweets.tweet_text, '[^\w]+', ' ', 'g');
+        -- RT/FAV
+        txt := regexp_replace(row_tweets.tweet_text, '^(RT|FAV)', '', 'gi');
+        -- URL
+        txt := regexp_replace(txt, '\m((https?://)(\w+)\.(\S+))', ' ', 'gi');
+        -- User mentions
+        txt := regexp_replace(txt, '@\w*', ' ', 'gi');
+        -- Hashtags and other special characters (except apostrophe)
+        txt := regexp_replace(txt, '[^\w''\s]', ' ', 'gi');
+        -- Remove apostrophe and the next letter
+        -- NOTE: REMOVE THE EXTRA SPACE IN REGEX PATTERN. FORMATTER DOES THIS BY DEFAULT
+        txt := regexp_replace(txt, '' '\w', ' ', 'gi');
+        -- Apparently, colons get left out
+        txt := regexp_replace(txt, ':', ' ', 'gi');
+        -- Remove extra spaces in the start and end
+        txt := regexp_replace(txt, '^\s+', '', 'gi');
+        txt := regexp_replace(txt, '\s+$', '', 'gi');
+        EXECUTE 'INSERT INTO tweet_word select $1, unnest(tsvector_to_array(to_tsvector(''simple'', $2)))'
+        USING row_tweets.tweet_id,
+        txt;
     END LOOP;
 END;
 $$
 LANGUAGE plpgsql;
 
-CALL remove_special_characters ();
+CREATE OR REPLACE PROCEDURE calculate_word_score ()
+    AS $$
+BEGIN
+    INSERT INTO tweet_word_sentiment
+    SELECT
+        tweet_word.tweet_id,
+        tweet_word.word,
+        word_sentiment.score
+    FROM
+        tweet_word
+    LEFT JOIN word_sentiment ON tweet_word.word = word_sentiment.word
+END;
+$$
+LANGUAGE sql;
+
+WITH most_positive_tweets AS (
+    SELECT
+        *
+    FROM
+        base_tweets
+    WHERE
+        base_tweets.tweet_id IN (
+            SELECT
+                tweet_word_sentiment.tweet_id
+            FROM
+                tweet_word_sentiment
+            GROUP BY
+                tweet_word_sentiment.tweet_id,
+                word
+            ORDER BY
+                sum(score) DESC
+            LIMIT 5))
+SELECT
+    tweet_id,
+    tweet_text
+FROM
+    most_positive_tweets;
+
+WITH most_negative_tweets AS (
+    SELECT
+        *
+    FROM
+        base_tweets
+    WHERE
+        base_tweets.tweet_id IN (
+            SELECT
+                tweet_word_sentiment.tweet_id
+            FROM
+                tweet_word_sentiment
+            GROUP BY
+                tweet_word_sentiment.tweet_id,
+                word
+            ORDER BY
+                sum(score)
+            LIMIT 5))
+SELECT
+    tweet_id,
+    tweet_text
+FROM
+    most_negative_tweets;
+
+WITH most_positive_tweets AS (
+    SELECT
+        *
+    FROM
+        base_tweets
+    WHERE
+        base_tweets.tweet_id = (
+            SELECT
+                tweet_id
+            FROM
+                tweet_word_sentiment
+            ORDER BY
+                sum(score) DESC
+            LIMIT 5))
+SELECT
+    tweet_id,
+    tweet_text
+FROM
+    most_positive_tweets;
 
 -- One word popular words
 WITH popular_words AS (
     SELECT
-        word
+        word,
+        nentry
     FROM
-        ts_stat('select tweet_text::tsvector from test')
+        ts_stat('select to_tsvector(''english'', tweet_text) from base_tweets') -- 'english' removes the stop words by default. Not sure about its coverage
     WHERE
         nentry > 1 --> parameter
-        AND NOT word IN ('to', 'the', 'at', 'in', 'a') --> parameter
+        -- AND NOT word IN ('to', 'the', 'at', 'in', 'a') --> parameter
+    ORDER BY
+        nentry DESC
 )
 SELECT
     *
@@ -273,10 +363,10 @@ WITH popular_words AS (
     SELECT
         word
     FROM
-        ts_stat('select tweet_text::tsvector from test')
+        ts_stat('select to_tsvector(''english'', tweet_text) from base_tweets')
     WHERE
         nentry > 1 --> parameter
-        AND NOT word IN ('to', 'the', 'at', 'in', 'a') --> parameter
+        -- AND NOT word IN ('to', 'the', 'at', 'in', 'a') --> parameter
 )
 SELECT
     concat_ws(' ', a1.word, a2.word) phrase,

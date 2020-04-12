@@ -111,14 +111,7 @@ def insert_tweets_from_object(tweet):
 
 def insert_tweets_data(query):
 
-    # May not work for Gujarati cities.
-    # Not enough people posting with location info.
-    # NYC
-    LAT = 40.712776
-    LONG = -74.005974
-
-    geocode = str(LAT) + ',' + str(LONG) + ',1000mi'
-    for i, tweet in enumerate(tweepy.Cursor(api.search, q=query).items(10)):
+    for i, tweet in enumerate(tweepy.Cursor(api.search, q=query, lang='en').items(50)):
         logger.info('TWEET NO. %d', i)
         json_dict = tweet._json
 

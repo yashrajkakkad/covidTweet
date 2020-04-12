@@ -141,6 +141,27 @@ class Intensity(db.Model):
     intensity = db.Column(db.Float)
 
 
+class WordSentiment(db.Model):
+    __tablename__ = 'word_sentiment'
+    word = db.Column(db.Text, primary_key=True)
+    score = db.Column(db.Integer)
+
+
+class TweetWord(db.Model):
+    __tablename__ = 'tweet_word'
+    tweet_id = db.Column(db.BigInteger, db.ForeignKey(
+        'base_tweets.tweet_id'), primary_key=True)
+    word = db.Column(db.Text, primary_key=True)
+
+
+class TweetWordSentiment(db.Model):
+    __tablename__ = 'tweet_word_sentiment'
+    tweet_id = db.Column(db.BigInteger, db.ForeignKey(
+        'base_tweets.tweet_id'), primary_key=True)
+    word = db.Column(db.Text, primary_key=True)
+    score = db.Column(db.Integer)
+
+
 class Database():
 
     def __init__(self):
