@@ -165,7 +165,7 @@ CREATE OR REPLACE FUNCTION most_popular_users ()
     RETURNS TABLE (
         name varchar(60),
         screen_name varchar(60),
-        followers_count integer,
+        followers_count varchar,
         profile_image_url_https varchar(512)
     )
     AS $$
@@ -173,10 +173,24 @@ DECLARE
 BEGIN
     RETURN QUERY (
         SELECT
-            users.name, users.screen_name, users.followers_count, users.profile_image_url_https FROM users ORDER BY followers_count DESC LIMIT 10);
+            users.name, users.screen_name, convert_to_human_readable (users.followers_count), users.profile_image_url_https FROM users ORDER BY users.followers_count DESC LIMIT 10);
 END;
 $$
 LANGUAGE plpgsql;
+
+-- Convert follower count to human readable
+CREATE OR REPLACE FUNCTION convert_to_human_readable (n integer)
+    RETURNS varchar
+    AS $$
+import math
+from decimal import Decimal
+millnames = ['', 'k', 'M', 'B', 'T', 'P', 'E', 'Z', 'Y']
+x = float(n)
+millidx = max(0, min(len(millnames) - 1, int(math.floor(0 if x == 0 else math.log10(abs(x)) / 3))))
+result = '{:.{precision}f}'.format(x / 10**(3 * millidx), precision=1)
+return '{0}{dx}'.format(result, dx=millnames[millidx])
+$$
+LANGUAGE plpython3u;
 
 CREATE OR REPLACE FUNCTION most_popular_tweets ()
     RETURNS TABLE (

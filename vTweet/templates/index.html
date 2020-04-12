@@ -13,6 +13,7 @@
         <h1 class="mt-2">Welcome to vTweet!</h1>
         <h4 class="text-right">- Location-based tweet analysis</h4>
     </div>
+    <hr>
     <div class="container-fluid">
         <div id="mapid" class="col-md-12" style="height: 500px;"></div>
         <script>
@@ -43,6 +44,7 @@
             ).addTo(mymap);
         </script>
     </div>
+    <hr>
     <div class="container">
         <h3>
             Hashtags
@@ -65,6 +67,7 @@
             </tbody>
         </table>
     </div>
+    <hr>
     <div class="container">
         <h3>
             Popular users
@@ -76,9 +79,9 @@
                 <img src="{{ res[3].replace('_normal', '') }}" class="card-img-top" />
                 <div class="card-body">
                     <h5 class="card-title">{{ res[0] }}</h5>
-                    <p class="card-text">
+                    <a class="card-text" target="_blank" href="https://twitter.com/{{ res[1] }}">
                         @{{ res[1] }}
-                    </p>
+                    </a>
                 </div>
                 <div class="card-body">
                     <p>Followers Count: {{ res[2] }}</p>
@@ -87,6 +90,7 @@
             {% endfor %}
         </div>
     </div>
+    <hr>
     <div class="container">
         <h3>
             Popular tweets
