@@ -42,7 +42,8 @@ def home():
         # print(type(r))
         # print(r.json())
         try:
-            popular_tweet_html.append(r.json()['html'])
+            popular_tweet_html.append(r.json()['html'].replace(
+                'twitter-tweet', 'twitter-tweet tw-align-center'))
         except KeyError:  # Some accounts have gone private now. Can be made into a trigger possibly
             pass
         # print(r.json()['html'])

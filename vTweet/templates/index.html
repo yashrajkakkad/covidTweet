@@ -86,6 +86,12 @@
             </div>
             {% endfor %}
         </div>
+    </div>
+    <div class="container">
+        <h3>
+            Popular tweets
+            <small class="text-muted">in terms of favorite count</small>
+        </h3>
         <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
                 {% for res in popular_tweet_html %}
@@ -102,11 +108,11 @@
                 {% endfor %}
             </div>
             <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
                 <span class="sr-only">Previous</span>
             </a>
             <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
                 <span class="sr-only">Next</span>
             </a>
         </div>
