@@ -1,17 +1,10 @@
 {% extends "base.html" %} {% block title %} vTweet {% endblock %} {% block body %}
 
-    <body>
+<body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">vTweet</a>
-        <button
-                class="navbar-toggler"
-                type="button"
-                data-toggle="collapse"
-                data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
     </nav>
@@ -41,12 +34,12 @@
             var heat = L.heatLayer(
                 [
                     {% for res in heatmap_results %}
-                        [{{res[0]}}, {{res[1]}}, {{res[2]}}],
-                    {% endfor %}
+            [{{ res[0]}}, {{ res[1]}}, {{ res[2]}}],
+                {% endfor %}
                 ],
-                {% raw %}
-                {radius: 25, maxZoom: 3}
-                {% endraw %}
+            {% raw %}
+            { radius: 25, maxZoom: 3 }
+            {% endraw %}
             ).addTo(mymap);
         </script>
     </div>
@@ -57,18 +50,18 @@
         </h3>
         <table class="table">
             <thead class="thead-dark">
-            <tr>
-                <th scope="col">Hashtag</th>
-                <th scope="col">#</th>
-            </tr>
+                <tr>
+                    <th scope="col">Hashtag</th>
+                    <th scope="col">#</th>
+                </tr>
             </thead>
             <tbody>
-            {% for res in hashtag_results %}
+                {% for res in hashtag_results %}
                 <tr>
                     <th scope="row">{{ res[0] }}</th>
                     <td>{{ res[1] }}</td>
                 </tr>
-            {% endfor %}
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -79,33 +72,33 @@
         </h3>
         <div class="row">
             {% for res in popular_user_results %}
-                <div class="card col-12 col-md-6 col-lg-4" style="width: 18rem;">
-                    <img src="{{ res[3] }}" class="card-img-top"/>
-                    <div class="card-body">
-                        <h5 class="card-title">{{ res[0] }}</h5>
-                        <p class="card-text">
-                            @{{ res[1] }}
-                        </p>
-                    </div>
-                    <div class="card-body">
-                        <p>Followers Count: {{ res[2] }}</p>
-                    </div>
+            <div class="card col-12 col-md-6 col-lg-4" style="width: 18rem;">
+                <img src="{{ res[3].replace('_normal', '') }}" class="card-img-top" />
+                <div class="card-body">
+                    <h5 class="card-title">{{ res[0] }}</h5>
+                    <p class="card-text">
+                        @{{ res[1] }}
+                    </p>
                 </div>
+                <div class="card-body">
+                    <p>Followers Count: {{ res[2] }}</p>
+                </div>
+            </div>
             {% endfor %}
         </div>
         <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
             <div class="carousel-inner">
                 {% for res in popular_tweet_html %}
-                    {% if loop.index == 1 %}
-                        <div class="carousel-item active" style="margin: auto;">
-                            {{ res|safe }}
-                        </div>
-                    {% else %}
-                        <div class="carousel-item" style="margin: auto;">
-                            {{ res|safe }}
-                            {#                    <img class="d-block w-100" src="..." alt="Second slide">#}
-                        </div>
-                    {% endif %}
+                {% if loop.index == 1 %}
+                <div class="carousel-item active" style="margin: auto;">
+                    {{ res|safe }}
+                </div>
+                {% else %}
+                <div class="carousel-item" style="margin: auto;">
+                    {{ res|safe }}
+                    {#                    <img class="d-block w-100" src="..." alt="Second slide">#}
+                </div>
+                {% endif %}
                 {% endfor %}
             </div>
             <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
@@ -158,6 +151,6 @@
     {#        )#}
     {#        .addTo(map);#}
     {#    </script> -->#}
-    </body>
+</body>
 
 {% endblock %}
