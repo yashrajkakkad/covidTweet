@@ -41,7 +41,10 @@ def home():
         })
         # print(type(r))
         # print(r.json())
-        popular_tweet_html.append(r.json()['html'])
+        try:
+            popular_tweet_html.append(r.json()['html'])
+        except KeyError:  # Some accounts have gone private now. Can be made into a trigger possibly
+            pass
         # print(r.json()['html'])
     return render_template('index.html', hashtag_results=hashtag_results, heatmap_results=heatmap_results,
                            popular_user_results=popular_user_results, popular_tweet_html=popular_tweet_html)
@@ -56,7 +59,7 @@ def renderMap():
 def fetch():
     tweet_ids = fetch_tweet_ids()
     chunks = [tweet_ids[x:x + 100] for x in range(0, len(tweet_ids), 100)]
-    f = open('tweets.pickle', 'wb')
+    f = open('tweets.pickle', 'ab')
     for i, chunk in enumerate(chunks):
         try:
             statuses = api.statuses_lookup(chunk, include_entities=True)
@@ -68,4 +71,4 @@ def fetch():
         except TweepError:
             pass
         print(i)
-    return render_template_string('Hello')
+    return render_template_string('All tweets fetched into the pickle file')
