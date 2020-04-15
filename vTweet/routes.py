@@ -25,23 +25,23 @@ def home():
     hashtag_results = db.session.execute(
         'SELECT * FROM most_popular_hashtags();').fetchall()
 
-    heatmap_results = db.session.execute('SELECT * FROM heatmap_input();').fetchall()
+    heatmap_results = db.session.execute(
+        'SELECT * FROM heatmap_input();').fetchall()
 
     popular_user_results = db.session.execute(
         'SELECT * FROM most_popular_users();').fetchall()
 
-    popular_user_followers = [db.session.execute(
-        'SELECT * FROM convert_to_human_readable({})'.format(i[2])).scalar() for i in popular_user_results]
+    # popular_user_followers = [db.session.execute(
+    #     'SELECT * FROM convert_to_human_readable({})'.format(i[2])).scalar() for i in popular_user_results]
     # popular_user_followers = [y[0] for x in popular_user_followers for y in x]
-    popular_user_details = []
+    # popular_user_details = []
     # for
     # for res in popular_user_results:
     #     print(res)
     # for res in popular_user_followers:
     #     print(res)
-    for res in zip(popular_user_followers, popular_user_results):
-        print(res)
-
+    # for res in zip(popular_user_followers, popular_user_results):
+    #     print(res)
 
     popular_tweet_results = db.session.execute(
         'SELECT * FROM most_popular_tweets();').fetchall()
@@ -64,10 +64,10 @@ def home():
     #     for y in x:
     #         print(y)
     # print(popular_user_followers)
-    print(len(popular_user_followers))
+    # print(len(popular_user_followers))
     # popular_user_results = [for i in]
     # print(popular_user_results[0])
-    popular_user_results = zip(popular_user_followers, popular_user_results)
+    # popular_user_results = zip(popular_user_followers, popular_user_results)
     # print(len(popular_user_results))
     # print(popular_user_results)
     # for x,y in popular_user_results:
