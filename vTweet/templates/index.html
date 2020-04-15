@@ -97,7 +97,7 @@
       Popular tweets
       <small class="text-muted">in terms of favorite count</small>
     </h3>
-    <div id="popularTweets" class="carousel slide" data-ride="carousel">
+    <div id="popularTweets" class="carousel slide" data-ride="false">
       <div class="carousel-inner">
         {% for res in popular_tweet_html %} {% if loop.index == 1 %}
         <div class="carousel-item active" style="margin: auto;">
@@ -126,7 +126,7 @@
       Most positive tweets
       <small class="text-muted">based on their sentiment scores</small>
     </h3>
-    <div id="positiveTweets" class="carousel slide" data-ride="carousel">
+    <div id="positiveTweets" class="carousel slide" data-ride="false">
       <div class="carousel-inner">
         {% for res in positive_tweets_html %} {% if loop.index == 1 %}
         <div class="carousel-item active" style="margin: auto;">
@@ -155,7 +155,7 @@
       Most negative tweets
       <small class="text-muted">based on their sentiment scores</small>
     </h3>
-    <div id="negativeTweets" class="carousel slide" data-ride="carousel">
+    <div id="negativeTweets" class="carousel slide" data-ride="false">
       <div class="carousel-inner">
         {% for res in positive_tweets_html %} {% if loop.index == 1 %}
         <div class="carousel-item active" style="margin: auto;">
