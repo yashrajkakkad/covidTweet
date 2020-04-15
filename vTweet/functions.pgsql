@@ -286,8 +286,7 @@ WITH most_positive_tweets AS (
             FROM
                 tweet_word_sentiment
             GROUP BY
-                tweet_word_sentiment.tweet_id,
-                word
+                tweet_word_sentiment.tweet_id
             ORDER BY
                 sum(score) DESC
             LIMIT 5))
@@ -309,8 +308,7 @@ WITH most_negative_tweets AS (
             FROM
                 tweet_word_sentiment
             GROUP BY
-                tweet_word_sentiment.tweet_id,
-                word
+                tweet_word_sentiment.tweet_id
             ORDER BY
                 sum(score)
             LIMIT 5))
@@ -319,26 +317,6 @@ SELECT
     tweet_text
 FROM
     most_negative_tweets;
-
-WITH most_positive_tweets AS (
-    SELECT
-        *
-    FROM
-        base_tweets
-    WHERE
-        base_tweets.tweet_id = (
-            SELECT
-                tweet_id
-            FROM
-                tweet_word_sentiment
-            ORDER BY
-                sum(score) DESC
-            LIMIT 5))
-SELECT
-    tweet_id,
-    tweet_text
-FROM
-    most_positive_tweets;
 
 -- One word popular words
 WITH popular_words AS (
