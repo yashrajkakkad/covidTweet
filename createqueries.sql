@@ -18,7 +18,6 @@ CREATE TABLE places (
 )
 
 
-
 CREATE TABLE users (
 	id BIGSERIAL NOT NULL, 
 	id_str VARCHAR(20), 
