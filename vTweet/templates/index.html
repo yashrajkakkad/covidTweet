@@ -97,7 +97,7 @@
       Popular tweets
       <small class="text-muted">in terms of favorite count</small>
     </h3>
-    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+    <div id="popularTweets" class="carousel slide" data-ride="carousel">
       <div class="carousel-inner">
         {% for res in popular_tweet_html %} {% if loop.index == 1 %}
         <div class="carousel-item active" style="margin: auto;">
@@ -110,11 +110,69 @@
         </div>
         {% endif %} {% endfor %}
       </div>
-      <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+      <a class="carousel-control-prev" href="#popularTweets" role="button" data-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
         <span class="sr-only">Previous</span>
       </a>
-      <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+      <a class="carousel-control-next" href="#popularTweets" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  </div>
+  <hr>
+  <div class="container">
+    <h3>
+      Most positive tweets
+      <small class="text-muted">based on their sentiment scores</small>
+    </h3>
+    <div id="positiveTweets" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+        {% for res in positive_tweets_html %} {% if loop.index == 1 %}
+        <div class="carousel-item active" style="margin: auto;">
+          {{ res|safe }}
+        </div>
+        {% else %}
+        <div class="carousel-item" style="margin: auto;">
+          {{ res|safe }} {#
+          <img class="d-block w-100" src="..." alt="Second slide" />#}
+        </div>
+        {% endif %} {% endfor %}
+      </div>
+      <a class="carousel-control-prev" href="#positiveTweets" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#positiveTweets" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  </div>
+  <hr>
+  <div class="container">
+    <h3>
+      Most negative tweets
+      <small class="text-muted">based on their sentiment scores</small>
+    </h3>
+    <div id="negativeTweets" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+        {% for res in positive_tweets_html %} {% if loop.index == 1 %}
+        <div class="carousel-item active" style="margin: auto;">
+          {{ res|safe }}
+        </div>
+        {% else %}
+        <div class="carousel-item" style="margin: auto;">
+          {{ res|safe }} {#
+          <img class="d-block w-100" src="..." alt="Second slide" />#}
+        </div>
+        {% endif %} {% endfor %}
+      </div>
+      <a class="carousel-control-prev" href="#negativeTweets" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#negativeTweets" role="button" data-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
         <span class="sr-only">Next</span>
       </a>

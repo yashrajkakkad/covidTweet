@@ -72,8 +72,47 @@ def home():
     # print(popular_user_results)
     # for x,y in popular_user_results:
     #     print(x,y)
-    return render_template('index.html', hashtag_results=hashtag_results, heatmap_results=heatmap_results,
-                           popular_user_results=popular_user_results, popular_tweet_html=popular_tweet_html)
+
+    most_positive_tweets = db.session.execute(
+        'SELECT * from most_positive_tweets').fetchall()
+
+    positive_tweets_html = []
+    for res in most_positive_tweets:
+        # print('https://twitter.com/{}/status/{}'.format(res[1], res[0]))
+        r = requests.get('https://publish.twitter.com/oembed', params={
+            'url': 'https://twitter.com/{}/status/{}'.format(res[1], res[0])
+        })
+        # print(type(r))
+        # print(r.json())
+        try:
+            positive_tweets_html.append(r.json()['html'].replace(
+                'twitter-tweet', 'twitter-tweet tw-align-center'))
+        except KeyError:  # Some accounts have gone private now. Can be made into a trigger possibly
+            pass
+
+    most_negative_tweets = db.session.execute(
+        'SELECT * from most_negative_tweets').fetchall()
+
+    negative_tweets_html = []
+    for res in most_negative_tweets:
+        # print('https://twitter.com/{}/status/{}'.format(res[1], res[0]))
+        r = requests.get('https://publish.twitter.com/oembed', params={
+            'url': 'https://twitter.com/{}/status/{}'.format(res[1], res[0])
+        })
+        # print(type(r))
+        # print(r.json())
+        try:
+            negative_tweets_html.append(r.json()['html'].replace(
+                'twitter-tweet', 'twitter-tweet tw-align-center'))
+        except KeyError:  # Some accounts have gone private now. Can be made into a trigger possibly
+            pass
+
+    return render_template('index.html',
+                           hashtag_results=hashtag_results,
+                           heatmap_results=heatmap_results,
+                           popular_user_results=popular_user_results, popular_tweet_html=popular_tweet_html,
+                           positive_tweets_html=positive_tweets_html,
+                           negative_tweets_html=negative_tweets_html)
 
 
 @app.route('/mapdemo', methods=['GET'])
