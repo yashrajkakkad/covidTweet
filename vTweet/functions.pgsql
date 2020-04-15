@@ -10,53 +10,53 @@ $$
 LANGUAGE plpgsql;
 
 -- Return the most popular user (tweeted/retweeted)
-CREATE OR REPLACE FUNCTION most_popular_users ()
-    RETURNS TABLE (
-        LIKE users
-    )
-    AS $$
-DECLARE
-    f_count_tweeted integer;
-    f_count_retweeted integer;
-    max_f_count integer;
-BEGIN
-    RETURN QUERY (
-        SELECT
-            users.* FROM users, tweet_users
-        UNION
-        SELECT
-            users.* FROM users, retweeted_users)
-ORDER BY
-    followers_count DESC
-LIMIT 5;
-    -- SELECT
-    --     MAX(followers_count) INTO f_count_tweeted
-    -- FROM
-    --     users,
-    --     tweet_users
-    -- WHERE
-    --     users.id = tweet_users.user_id;
-    -- SELECT
-    --     MAX(followers_count) INTO f_count_retweeted
-    -- FROM
-    --     users,
-    --     retweeted_users
-    -- WHERE
-    --     users.id = retweeted_users.user_id;
-    -- max_f_count := GREATEST (f_count_tweeted, f_count_retweeted);
-    -- RETURN QUERY
-    -- SELECT
-    --     *
-    -- FROM
-    --     users
-    -- WHERE
-    --     users.followers_count = max_f_count
-    -- LIMIT 1;
-END;
-$$
-LANGUAGE plpgsql;
-
+-- CREATE OR REPLACE FUNCTION most_popular_users ()
+--     RETURNS TABLE (
+--         LIKE users
+--     )
+--     AS $$
+-- DECLARE
+--     f_count_tweeted integer;
+--     f_count_retweeted integer;
+--     max_f_count integer;
+-- BEGIN
+--     RETURN QUERY (
+--         SELECT
+--             users.* FROM users, tweet_users
+--         UNION
+--         SELECT
+--             users.* FROM users, retweeted_users)
+-- ORDER BY
+--     followers_count DESC
+-- LIMIT 5;
+-- SELECT
+--     MAX(followers_count) INTO f_count_tweeted
+-- FROM
+--     users,
+--     tweet_users
+-- WHERE
+--     users.id = tweet_users.user_id;
+-- SELECT
+--     MAX(followers_count) INTO f_count_retweeted
+-- FROM
+--     users,
+--     retweeted_users
+-- WHERE
+--     users.id = retweeted_users.user_id;
+-- max_f_count := GREATEST (f_count_tweeted, f_count_retweeted);
+-- RETURN QUERY
+-- SELECT
+--     *
+-- FROM
+--     users
+-- WHERE
+--     users.followers_count = max_f_count
+-- LIMIT 1;
+-- END;
+-- $$
+-- LANGUAGE plpgsql;
 -- Increment Hashtag Frequency (Use this instead of directly inserting to Hashtag table)
+
 CREATE OR REPLACE PROCEDURE increment_hashtag_frequency (hashtag_name varchar
 )
     AS $$
