@@ -274,13 +274,18 @@ END;
 $$
 LANGUAGE sql;
 
-WITH most_positive_tweets AS (
-    SELECT
-        *
-    FROM
-        base_tweets
-    WHERE
-        base_tweets.tweet_id IN (
+CREATE OR REPLACE VIEW most_positive_tweets AS
+SELECT
+    base_tweets.tweet_id,
+    users.screen_name
+FROM
+    base_tweets,
+    tweet_users,
+    users
+WHERE
+    base_tweets.tweet_id = tweet_users.tweet_id
+    AND tweet_users.user_id = users.id
+    AND (base_tweets.tweet_id IN (
             SELECT
                 tweet_word_sentiment.tweet_id
             FROM
@@ -288,21 +293,21 @@ WITH most_positive_tweets AS (
             GROUP BY
                 tweet_word_sentiment.tweet_id
             ORDER BY
-                sum(score) DESC
-            LIMIT 5))
-SELECT
-    tweet_id,
-    tweet_text
-FROM
-    most_positive_tweets;
+                (sum(tweet_word_sentiment.score)) DESC
+            LIMIT 5));
 
-WITH most_negative_tweets AS (
-    SELECT
-        *
-    FROM
-        base_tweets
-    WHERE
-        base_tweets.tweet_id IN (
+CREATE OR REPLACE VIEW most_negative_tweets AS
+SELECT
+    base_tweets.tweet_id,
+    users.screen_name
+FROM
+    base_tweets,
+    tweet_users,
+    users
+WHERE
+    base_tweets.tweet_id = tweet_users.tweet_id
+    AND tweet_users.user_id = users.id
+    AND (base_tweets.tweet_id IN (
             SELECT
                 tweet_word_sentiment.tweet_id
             FROM
@@ -310,13 +315,8 @@ WITH most_negative_tweets AS (
             GROUP BY
                 tweet_word_sentiment.tweet_id
             ORDER BY
-                sum(score)
-            LIMIT 5))
-SELECT
-    tweet_id,
-    tweet_text
-FROM
-    most_negative_tweets;
+                (sum(tweet_word_sentiment.score))
+            LIMIT 5));
 
 -- One word popular words
 WITH popular_words AS (
