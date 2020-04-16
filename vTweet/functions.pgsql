@@ -406,7 +406,7 @@ word_str = re.sub(r'[^\x00-\x7F]+', ' ', word_str)
 word_str = word_str.replace('corona', '')
 word_str = word_str.replace('covid', '')
 word_cloud = WordCloud(stopwords=STOPWORDS,
-					   background_color='black',
+					   background_color='white',
                        width=640,
                        height=480).generate(word_str)
 word_cloud.to_file('cloud.png')
@@ -417,7 +417,7 @@ pos_word_str = re.sub(r'[^\x00-\x7F]+', ' ', pos_word_str)
 pos_word_str = pos_word_str.replace('corona', '')
 pos_word_str = pos_word_str.replace('covid', '')
 word_cloud = WordCloud(stopwords=STOPWORDS,
-					   background_color='black',
+					   background_color='white',
                        width=640,
                        height=480).generate(pos_word_str)
 word_cloud.to_file('pos_cloud.png')
@@ -428,7 +428,7 @@ neg_word_str = re.sub(r'[^\x00-\x7F]+', ' ', neg_word_str)
 neg_word_str = neg_word_str.replace('corona', '')
 neg_word_str = neg_word_str.replace('covid', '')
 word_cloud = WordCloud(stopwords=STOPWORDS,
-					   background_color='black',
+					   background_color='white',
                        width=640,
                        height=480).generate(neg_word_str)
 word_cloud.to_file('neg_cloud.png')
