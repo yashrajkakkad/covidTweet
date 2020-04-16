@@ -269,10 +269,10 @@ BEGIN
         word_sentiment.score
     FROM
         tweet_word
-    LEFT JOIN word_sentiment ON tweet_word.word = word_sentiment.word
+    LEFT JOIN word_sentiment ON tweet_word.word = word_sentiment.word;
 END;
 $$
-LANGUAGE sql;
+LANGUAGE plpgsql;
 
 CREATE OR REPLACE VIEW most_positive_tweets AS
 SELECT
@@ -361,4 +361,33 @@ HAVING
     count(*) > 1 --> parameter
 ORDER BY
     2 DESC;
+
+CREATE OR REPLACE FUNCTION tweets_by_time ()
+    RETURNS integer ARRAY
+    AS $$
+DECLARE
+    tweet_frequency integer ARRAY := array_fill(0, ARRAY[24]);
+    freq_temp integer;
+BEGIN
+    -- FOR i IN 0..23 LOOP
+    --     RAISE NOTICE '%', tweet_frequency[i+1];
+    -- END LOOP;
+    FOR i IN 0..23 LOOP
+        SELECT
+            Count(*) INTO freq_temp
+        FROM
+            base_tweets
+        WHERE
+            EXTRACT(hour FROM created_at) = i;
+        tweet_frequency[i + 1] := freq_temp;
+    END LOOP;
+    RETURN tweet_frequency;
+END;
+$$
+LANGUAGE plpgsql;
+
+SELECT
+    *
+FROM
+    tweets_by_time ();
 
