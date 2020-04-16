@@ -10,6 +10,7 @@ from datetime import datetime
 from geopy.geocoders import Nominatim
 import csv
 import pickle
+from time import sleep
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -34,15 +35,21 @@ def fetch_tweet_data():
         while True:
             try:
                 status = pickle.load(f)
-                existing_tweet_ids.append(status.tweet_id)
+                existing_tweet_ids.append(status.id)
             except EOFError:
                 break
     tweet_ids = fetch_tweet_ids()
     tweet_ids = [x for x in tweet_ids if x not in existing_tweet_ids]
     chunks = [tweet_ids[x:x + 100] for x in range(0, len(tweet_ids), 100)]
     f = open('tweets.pickle', 'ab')
-    for chunk in chunks:
-        statuses = api.statuses_lookup(chunk, include_entities=True)
+    for i, chunk in enumerate(chunks):
+        print('Chunk #', i)
+        try:
+            statuses = api.statuses_lookup(chunk, include_entities=True)
+        except tweepy.RateLimitError:
+            print('Rate exceeded. Sleeping.....')
+            sleep(15 * 60)
+            statuses = api.statuses_lookup(chunk, include_entities=True)
         for status in statuses:
             pickle.dump(status, f)
             # print(type(status))
@@ -110,7 +117,6 @@ def insert_tweets_from_object(tweet):
 
 
 def insert_tweets_data(query):
-
     for i, tweet in enumerate(tweepy.Cursor(api.search, q=query, lang='en').items(50)):
         logger.info('TWEET NO. %d', i)
         json_dict = tweet._json
@@ -240,8 +246,11 @@ def insert_tweet(json_dict, place_id):
         possibly_sensitive = json_dict['possibly_sensitive']
     except KeyError:
         possibly_sensitive = False
-    tweet = BaseTweet(tweet_id=json_dict['id'], tweet_id_str=json_dict['id_str'], tweet_text=json_dict['text'], source=json_dict['source'], favorited=json_dict[
-        'favorited'], retweeted=json_dict['retweeted'], favorite_count=json_dict['favorite_count'], retweet_count=json_dict['retweet_count'], result_type=None, created_at=created_at, lang=json_dict['lang'], possibly_sensitive=possibly_sensitive, place_id=place_id)
+    tweet = BaseTweet(tweet_id=json_dict['id'], tweet_id_str=json_dict['id_str'], tweet_text=json_dict['text'],
+                      source=json_dict['source'], favorited=json_dict[
+            'favorited'], retweeted=json_dict['retweeted'], favorite_count=json_dict['favorite_count'],
+                      retweet_count=json_dict['retweet_count'], result_type=None, created_at=created_at,
+                      lang=json_dict['lang'], possibly_sensitive=possibly_sensitive, place_id=place_id)
     db.session.add(tweet)
     try:
         db.session.commit()
@@ -298,7 +307,8 @@ def insert_retweeted_user(json_dict):
         favourites_count = user_json['favourites_count']
 
         user = User(id=id, id_str=id_str, name=name, screen_name=screen_name, followers_count=followers_count,
-                    verified=verified, profile_image_url_https=profile_image_url_https, favourites_count=favourites_count)
+                    verified=verified, profile_image_url_https=profile_image_url_https,
+                    favourites_count=favourites_count)
         db.session.add(user)
         try:
             db.session.commit()
@@ -339,8 +349,10 @@ def insert_mentioned_user(json_dict):
             user_obj = api.get_user(id=id)
         except tweepy.error.TweepError:
             continue
-        user = User(id=id, id_str=user_obj.id_str, name=user_obj.name, screen_name=user_obj.screen_name, followers_count=user_obj.followers_count,
-                    verified=user_obj.verified, profile_image_url_https=user_obj.profile_image_url_https, favourites_count=user_obj.favourites_count)
+        user = User(id=id, id_str=user_obj.id_str, name=user_obj.name, screen_name=user_obj.screen_name,
+                    followers_count=user_obj.followers_count,
+                    verified=user_obj.verified, profile_image_url_https=user_obj.profile_image_url_https,
+                    favourites_count=user_obj.favourites_count)
         logger.info(user.id)
         db.session.add(user)
         try:

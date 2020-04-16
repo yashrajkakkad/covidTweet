@@ -135,7 +135,7 @@ DECLARE
         SELECT
             latitude,
             longitude,
-            COUNT(tweet_id)
+            COUNT(tweet_id) AS cnt
         FROM
             base_tweets,
             places
@@ -144,20 +144,28 @@ DECLARE
         GROUP BY
             places.place_id;
     rec_coordinates RECORD;
-BEGIN
-    DELETE FROM intensity;
-    OPEN cur_coordinates;
-    LOOP
-        FETCH cur_coordinates INTO rec_coordinates;
-        EXIT
-        WHEN NOT FOUND;
-        INSERT INTO intensity
-            VALUES (rec_coordinates.latitude, rec_coordinates.longitude, 1);
-    END LOOP;
-    RETURN QUERY (
-        SELECT
-            * FROM intensity);
-END;
+    intensity_temp numeric(2, 1);
+    BEGIN
+        DELETE FROM intensity;
+        OPEN cur_coordinates;
+        LOOP
+            FETCH cur_coordinates INTO rec_coordinates;
+            EXIT
+            WHEN NOT FOUND;
+            IF rec_coordinates.cnt >= 3 THEN
+                intensity_temp := 1;
+            ELSIF rec_coordinates.cnt = 2 THEN
+                intensity_temp := 0.8;
+            ELSE
+                intensity_temp := 0.6;
+            END IF;
+            INSERT INTO intensity
+                VALUES (rec_coordinates.latitude, rec_coordinates.longitude, intensity_temp);
+        END LOOP;
+        RETURN QUERY (
+            SELECT
+                * FROM intensity);
+    END;
 $$
 LANGUAGE plpgsql;
 
