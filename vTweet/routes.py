@@ -6,6 +6,9 @@ from vTweet import db, api
 import requests
 import pickle
 from tweepy.error import TweepError
+from wordcloud import WordCloud, STOPWORDS
+import preprocessor as p
+import re
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -122,6 +125,29 @@ def home():
 @app.route('/mapdemo', methods=['GET'])
 def renderMap():
     return render_template('map.html')
+
+
+@app.route('/wordcloud')
+def wordcloud_demo():
+    words = db.session.execute(
+        'SELECT word from tweet_word').fetchall()
+    word_list = []
+    for word in words:
+        word_list.append(word[0])
+    word_str = ' '.join(word_list)
+    word_str = p.clean(word_str)
+    word_str = re.sub(r'[^\x00-\x7F]+', ' ', word_str)
+    word_str = word_str.replace('corona', '')
+    word_str = word_str.replace('covid', '')
+    word_cloud = WordCloud(stopwords=STOPWORDS).generate(word_str)
+
+    # Display the generated image:
+    # the matplotlib way:
+    import matplotlib.pyplot as plt
+    plt.imshow(word_cloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.savefig('GG.png')
+    return render_template_string('GG')
 
 
 @app.route('/fetch')
