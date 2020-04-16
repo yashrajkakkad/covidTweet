@@ -6,6 +6,7 @@ from vTweet import db, api
 import requests
 import pickle
 from tweepy.error import TweepError
+from shutil import copyfile
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -76,8 +77,6 @@ def home():
     most_positive_tweets = db.session.execute(
         'SELECT * from most_positive_tweets').fetchall()
 
-    print(most_positive_tweets)
-
     positive_tweets_html = []
     for res in most_positive_tweets:
         # print('https://twitter.com/{}/status/{}'.format(res[1], res[0]))
@@ -109,19 +108,22 @@ def home():
         except KeyError:  # Some accounts have gone private now. Can be made into a trigger possibly
             pass
 
-    tweets_time_results = db.session.execute('SELECT * FROM tweets_by_time();').scalar()
-    print(tweets_time_results)
+    tweets_time_results = db.session.execute(
+        'SELECT * FROM tweets_by_time();').scalar()
+
+    generate_wordcloud = db.session.execute(
+        'SELECT * from generate_word_cloud(ARRAY(select word from tweet_word), ARRAY(select word from tweet_word_sentiment where score > 0), ARRAY(select word from tweet_word_sentiment where score < 0));')
+    copyfile('/var/lib/postgres/data/cloud.png', 'vTweet/static/images/cloud.png')
+    copyfile('/var/lib/postgres/data/pos_cloud.png', 'vTweet/static/images/pos_cloud.png')
+    copyfile('/var/lib/postgres/data/neg_cloud.png', 'vTweet/static/images/neg_cloud.png')
+
     return render_template('index.html',
                            hashtag_results=hashtag_results,
                            heatmap_results=heatmap_results,
                            popular_user_results=popular_user_results, popular_tweet_html=popular_tweet_html,
                            positive_tweets_html=positive_tweets_html,
-                           negative_tweets_html=negative_tweets_html, tweets_time_results=tweets_time_results)
-
-
-@app.route('/mapdemo', methods=['GET'])
-def renderMap():
-    return render_template('map.html')
+                           negative_tweets_html=negative_tweets_html,
+                           tweets_time_results=tweets_time_results)
 
 
 @app.route('/fetch')

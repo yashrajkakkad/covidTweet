@@ -399,3 +399,46 @@ SELECT
 FROM
     tweets_by_time ();
 
+CREATE OR REPLACE FUNCTION generate_word_cloud (words text[], pos_words text[], neg_words text[])
+    RETURNS varchar
+    AS $$
+
+import preprocessor as p
+import re
+from wordcloud import WordCloud, STOPWORDS
+import matplotlib.pyplot as plt
+
+word_str = ' '.join(words)
+word_str = p.clean(word_str)
+word_str = re.sub(r'[^\x00-\x7F]+', ' ', word_str)
+word_str = word_str.replace('corona', '')
+word_str = word_str.replace('covid', '')
+word_cloud = WordCloud(stopwords=STOPWORDS,
+					   background_color='white',
+                       width=640,
+                       height=480).generate(word_str)
+word_cloud.to_file('cloud.png')
+
+pos_word_str = ' '.join(pos_words)
+pos_word_str = p.clean(pos_word_str)
+pos_word_str = re.sub(r'[^\x00-\x7F]+', ' ', pos_word_str)
+pos_word_str = pos_word_str.replace('corona', '')
+pos_word_str = pos_word_str.replace('covid', '')
+word_cloud = WordCloud(stopwords=STOPWORDS,
+					   background_color='white',
+                       width=640,
+                       height=480).generate(pos_word_str)
+word_cloud.to_file('pos_cloud.png')
+
+neg_word_str = ' '.join(words)
+neg_word_str = p.clean(neg_word_str)
+neg_word_str = re.sub(r'[^\x00-\x7F]+', ' ', neg_word_str)
+neg_word_str = neg_word_str.replace('corona', '')
+neg_word_str = neg_word_str.replace('covid', '')
+word_cloud = WordCloud(stopwords=STOPWORDS,
+					   background_color='white',
+                       width=640,
+                       height=480).generate(neg_word_str)
+word_cloud.to_file('neg_cloud.png')
+$$
+LANGUAGE plpython3u;
