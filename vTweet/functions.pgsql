@@ -391,3 +391,24 @@ SELECT
 FROM
     tweets_by_time ();
 
+CREATE OR REPLACE FUNCTION generate_word_cloud (words text[])
+    RETURNS varchar
+    AS $$
+
+import preprocessor as p
+import re
+from wordcloud import WordCloud, STOPWORDS
+import matplotlib.pyplot as plt
+
+word_str = ' '.join(words)
+word_str = p.clean(word_str)
+word_str = re.sub(r'[^\x00-\x7F]+', ' ', word_str)
+word_str = word_str.replace('corona', '')
+word_str = word_str.replace('covid', '')
+word_cloud = WordCloud(stopwords=STOPWORDS,
+					   background_color='black',
+                       width=640,
+                       height=480).generate(word_str)
+word_cloud.to_file('GG.png')
+$$
+LANGUAGE plpython3u;

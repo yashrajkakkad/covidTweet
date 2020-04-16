@@ -6,9 +6,7 @@ from vTweet import db, api
 import requests
 import pickle
 from tweepy.error import TweepError
-from wordcloud import WordCloud, STOPWORDS
-import preprocessor as p
-import re
+from shutil import copyfile
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -79,8 +77,6 @@ def home():
     most_positive_tweets = db.session.execute(
         'SELECT * from most_positive_tweets').fetchall()
 
-    print(most_positive_tweets)
-
     positive_tweets_html = []
     for res in most_positive_tweets:
         # print('https://twitter.com/{}/status/{}'.format(res[1], res[0]))
@@ -112,42 +108,20 @@ def home():
         except KeyError:  # Some accounts have gone private now. Can be made into a trigger possibly
             pass
 
-    tweets_time_results = db.session.execute('SELECT * FROM tweets_by_time();').scalar()
-    print(tweets_time_results)
+    tweets_time_results = db.session.execute(
+        'SELECT * FROM tweets_by_time();').scalar()
+
+    generate_wordcloud = db.session.execute(
+        'SELECT * from generate_word_cloud(ARRAY(select word from tweet_word));')
+    copyfile('/var/lib/postgres/data/GG.png', 'vTweet/static/images/GG.png')
+
     return render_template('index.html',
                            hashtag_results=hashtag_results,
                            heatmap_results=heatmap_results,
                            popular_user_results=popular_user_results, popular_tweet_html=popular_tweet_html,
                            positive_tweets_html=positive_tweets_html,
-                           negative_tweets_html=negative_tweets_html, tweets_time_results=tweets_time_results)
-
-
-@app.route('/mapdemo', methods=['GET'])
-def renderMap():
-    return render_template('map.html')
-
-
-@app.route('/wordcloud')
-def wordcloud_demo():
-    words = db.session.execute(
-        'SELECT word from tweet_word').fetchall()
-    word_list = []
-    for word in words:
-        word_list.append(word[0])
-    word_str = ' '.join(word_list)
-    word_str = p.clean(word_str)
-    word_str = re.sub(r'[^\x00-\x7F]+', ' ', word_str)
-    word_str = word_str.replace('corona', '')
-    word_str = word_str.replace('covid', '')
-    word_cloud = WordCloud(stopwords=STOPWORDS).generate(word_str)
-
-    # Display the generated image:
-    # the matplotlib way:
-    import matplotlib.pyplot as plt
-    plt.imshow(word_cloud, interpolation='bilinear')
-    plt.axis("off")
-    plt.savefig('GG.png')
-    return render_template_string('GG')
+                           negative_tweets_html=negative_tweets_html,
+                           tweets_time_results=tweets_time_results)
 
 
 @app.route('/fetch')
