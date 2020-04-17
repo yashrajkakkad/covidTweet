@@ -118,7 +118,9 @@ def home():
     # copyfile('/var/lib/postgres/data/pos_cloud.png', 'vTweet/static/images/pos_cloud.png')
     # copyfile('/var/lib/postgres/data/neg_cloud.png', 'vTweet/static/images/neg_cloud.png')
     tweets_time_results = tweets_time_results[0]
-    print(tweets_time_results)
+
+    activity_hours_by_place = db.session.execute(
+        'SELECT * FROM most_active_time_per_location();')
 
     return render_template('index.html',
                            hashtag_results=hashtag_results,
@@ -126,7 +128,8 @@ def home():
                            popular_user_results=popular_user_results, popular_tweet_html=popular_tweet_html,
                            positive_tweets_html=positive_tweets_html,
                            negative_tweets_html=negative_tweets_html,
-                           tweets_time_results=tweets_time_results)
+                           tweets_time_results=tweets_time_results,
+                           activity_hours_by_place=activity_hours_by_place)
 
 
 @app.route('/fetch')
