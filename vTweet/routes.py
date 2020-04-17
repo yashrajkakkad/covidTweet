@@ -122,6 +122,9 @@ def home():
     activity_hours_by_place = db.session.execute(
         'SELECT * FROM most_active_time_per_location();')
 
+    mean_sentiment_scores_by_location = db.session.execute(
+        'SELECT * FROM mean_sentiment_scores_by_location();')
+
     return render_template('index.html',
                            hashtag_results=hashtag_results,
                            heatmap_results=heatmap_results,
@@ -129,7 +132,8 @@ def home():
                            positive_tweets_html=positive_tweets_html,
                            negative_tweets_html=negative_tweets_html,
                            tweets_time_results=tweets_time_results,
-                           activity_hours_by_place=activity_hours_by_place)
+                           activity_hours_by_place=activity_hours_by_place,
+                           mean_sentiment_scores_by_location=mean_sentiment_scores_by_location)
 
 
 @app.route('/fetch')
