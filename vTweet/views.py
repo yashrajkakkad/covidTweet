@@ -194,7 +194,7 @@ def insert_place(json_dict):
         name = json_dict['place']['name']
         country = json_dict['place']['country']
         country_code = json_dict['place']['country_code']
-        location = geolocator.geocode(country)
+        location = geolocator.geocode(name)
         latitude = location.latitude
         longitude = location.longitude
         place = Place(place_id=place_id, name=name,
@@ -248,9 +248,9 @@ def insert_tweet(json_dict, place_id):
         possibly_sensitive = False
     tweet = BaseTweet(tweet_id=json_dict['id'], tweet_id_str=json_dict['id_str'], tweet_text=json_dict['text'],
                       source=json_dict['source'], favorited=json_dict[
-            'favorited'], retweeted=json_dict['retweeted'], favorite_count=json_dict['favorite_count'],
-                      retweet_count=json_dict['retweet_count'], result_type=None, created_at=created_at,
-                      lang=json_dict['lang'], possibly_sensitive=possibly_sensitive, place_id=place_id)
+        'favorited'], retweeted=json_dict['retweeted'], favorite_count=json_dict['favorite_count'],
+        retweet_count=json_dict['retweet_count'], result_type=None, created_at=created_at,
+        lang=json_dict['lang'], possibly_sensitive=possibly_sensitive, place_id=place_id)
     db.session.add(tweet)
     try:
         db.session.commit()
