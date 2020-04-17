@@ -75,7 +75,7 @@ def home():
     #     print(x,y)
 
     most_positive_tweets = db.session.execute(
-        'SELECT * from most_positive_tweets').fetchall()
+        'SELECT * from most_positive_tweets()').fetchall()
 
     positive_tweets_html = []
     for res in most_positive_tweets:
@@ -92,7 +92,7 @@ def home():
             pass
 
     most_negative_tweets = db.session.execute(
-        'SELECT * from most_negative_tweets').fetchall()
+        'SELECT * from most_negative_tweets()').fetchall()
 
     negative_tweets_html = []
     for res in most_negative_tweets:

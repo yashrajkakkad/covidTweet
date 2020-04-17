@@ -282,49 +282,46 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE VIEW most_positive_tweets AS
-SELECT
-    base_tweets.tweet_id,
-    users.screen_name
-FROM
-    base_tweets,
-    tweet_users,
-    users
-WHERE
-    base_tweets.tweet_id = tweet_users.tweet_id
-    AND tweet_users.user_id = users.id
-    AND (base_tweets.tweet_id IN (
-            SELECT
-                tweet_word_sentiment.tweet_id
-            FROM
-                tweet_word_sentiment
-            GROUP BY
-                tweet_word_sentiment.tweet_id
-            ORDER BY
-                (sum(tweet_word_sentiment.score)) DESC
-            LIMIT 5));
+CREATE OR REPLACE FUNCTION most_positive_tweets ()
+    RETURNS TABLE (
+        b_tweets base_tweets.tweet_id % TYPE,
+        s_name users.screen_name % TYPE
+    )
+    AS $$
+BEGIN
+    RETURN QUERY (
+        SELECT
+            base_tweets.tweet_id, users.screen_name FROM base_tweets, tweet_users, users
+        WHERE
+            base_tweets.tweet_id = tweet_users.tweet_id
+            AND tweet_users.user_id = users.id
+            AND (base_tweets.tweet_id IN (
+                    SELECT
+                        tweet_word_sentiment.tweet_id FROM tweet_word_sentiment GROUP BY tweet_word_sentiment.tweet_id ORDER BY (sum(tweet_word_sentiment.score)) DESC LIMIT 5)));
+END;
+$$
+LANGUAGE plpgsql;
 
-CREATE OR REPLACE VIEW most_negative_tweets AS
-SELECT
-    base_tweets.tweet_id,
-    users.screen_name
-FROM
-    base_tweets,
-    tweet_users,
-    users
-WHERE
-    base_tweets.tweet_id = tweet_users.tweet_id
-    AND tweet_users.user_id = users.id
-    AND (base_tweets.tweet_id IN (
-            SELECT
-                tweet_word_sentiment.tweet_id
-            FROM
-                tweet_word_sentiment
-            GROUP BY
-                tweet_word_sentiment.tweet_id
-            ORDER BY
-                (sum(tweet_word_sentiment.score))
-            LIMIT 5));
+CREATE OR REPLACE FUNCTION most_negative_tweets ()
+    RETURNS TABLE (
+        b_tweets base_tweets.tweet_id % TYPE,
+        s_name users.screen_name % TYPE
+    )
+    AS $$
+BEGIN
+    RETURN QUERY (
+        SELECT
+            base_tweets.tweet_id, users.screen_name FROM base_tweets, tweet_users, users
+        WHERE
+            base_tweets.tweet_id = tweet_users.tweet_id
+            AND tweet_users.user_id = users.id
+            AND (base_tweets.tweet_id IN (
+                    SELECT
+                        tweet_word_sentiment.tweet_id FROM tweet_word_sentiment GROUP BY tweet_word_sentiment.tweet_id ORDER BY (sum(tweet_word_sentiment.score))
+            LIMIT 5)));
+END;
+$$
+LANGUAGE plpgsql;
 
 -- One word popular words
 WITH popular_words AS (
@@ -442,3 +439,4 @@ word_cloud = WordCloud(stopwords=STOPWORDS,
 word_cloud.to_file('neg_cloud.png')
 $$
 LANGUAGE plpython3u;
+
