@@ -589,3 +589,39 @@ FROM (
         EXTRACT(hour FROM created_at),
         places.place_id) AS derivedTable;
 
+CREATE OR REPLACE FUNCTION mean_sentiment_scores_by_location ()
+    RETURNS TABLE (
+        p_id character varying,
+        p_name character varying,
+        p_mean_score real,
+        p_latitude double precision,
+        p_longitude double precision)
+    LANGUAGE 'plpgsql'
+    AS $$
+BEGIN
+    RETURN QUERY (
+        SELECT
+            place, places.name, (
+                SELECT
+                    (sum(score_sum) / count(*))::real FROM base_tweets
+        WHERE
+            base_tweets.place_id = place), places.latitude, places.longitude FROM (
+            SELECT
+                tweet_word_sentiment.tweet_id, sum(tweet_word_sentiment.score) AS score_sum, base_tweets.place_id AS place FROM tweet_word_sentiment, base_tweets
+        WHERE
+            tweet_word_sentiment.tweet_id IN (
+                SELECT
+                    base_tweets.tweet_id FROM base_tweets
+                WHERE
+                    base_tweets.place_id IS NOT NULL)
+            AND tweet_word_sentiment.tweet_id = base_tweets.tweet_id GROUP BY tweet_word_sentiment.tweet_id, base_tweets.place_id ORDER BY sum(tweet_word_sentiment.score)) AS tbl, places
+    WHERE
+        places.place_id = place GROUP BY place, places.name, places.latitude, places.longitude);
+END;
+$$;
+
+SELECT
+    *
+FROM
+    mean_sentiment_scores_by_location ();
+
