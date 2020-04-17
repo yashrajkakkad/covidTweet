@@ -546,22 +546,32 @@ word_cloud.to_file('neg_cloud.png')
 $$
 LANGUAGE plpython3u;
 
-CREATE OR REPLACE FUNCTION popular_time_per_location ()
+CREATE OR REPLACE FUNCTION most_active_time_per_location ()
     RETURNS TABLE (
         hr double precision,
-        cnt bigint,
-        p_id places.place_id % TYPE
-    )
+        p_id character varying,
+        p_name character varying,
+        p_latitude double precision,
+        p_longitude double precision)
+    LANGUAGE 'plpgsql'
     AS $$
 BEGIN
-    RETURN QUERY (
-        SELECT
-            EXTRACT(hour FROM created_at), COUNT(EXTRACT(hour FROM created_at)), places.place_id FROM base_tweets, places
-    WHERE
-        base_tweets.place_id = places.place_id GROUP BY EXTRACT(hour FROM created_at), places.place_id);
+    RETURN QUERY ( SELECT DISTINCT ON (place_id)
+        most_active_hour, placeid, places.name, places.latitude, places.longitude FROM (
+            SELECT
+                EXTRACT(hour FROM created_at) AS most_active_hour, places.place_id AS placeid, RANK() OVER (PARTITION BY places.place_id ORDER BY COUNT(EXTRACT(hour FROM created_at)) DESC) AS hour_rank FROM base_tweets, places
+WHERE
+    base_tweets.place_id = places.place_id GROUP BY EXTRACT(hour FROM created_at), places.place_id ORDER BY places.name) AS tbl
+JOIN places ON places.place_id = placeid
+WHERE
+    hour_rank = 1);
 END;
-$$
-LANGUAGE plpgsql;
+$$;
+
+SELECT
+    *
+FROM
+    most_active_time_per_location ();
 
 SELECT
     MAX(cnt)
@@ -578,11 +588,4 @@ FROM (
     GROUP BY
         EXTRACT(hour FROM created_at),
         places.place_id) AS derivedTable;
-
-SELECT
-    *
-FROM
-    popular_time_per_location ();
-
-DROP FUNCTION popular_time_per_location ();
 
