@@ -440,3 +440,43 @@ word_cloud.to_file('neg_cloud.png')
 $$
 LANGUAGE plpython3u;
 
+CREATE OR REPLACE FUNCTION popular_time_per_location ()
+    RETURNS TABLE (
+        hr double precision,
+        cnt bigint,
+        p_id places.place_id % TYPE
+    )
+    AS $$
+BEGIN
+    RETURN QUERY (
+        SELECT
+            EXTRACT(hour FROM created_at), COUNT(EXTRACT(hour FROM created_at)), places.place_id FROM base_tweets, places
+    WHERE
+        base_tweets.place_id = places.place_id GROUP BY EXTRACT(hour FROM created_at), places.place_id);
+END;
+$$
+LANGUAGE plpgsql;
+
+SELECT
+    MAX(cnt)
+FROM (
+    SELECT
+        EXTRACT(hour FROM created_at),
+        COUNT(EXTRACT(hour FROM created_at)) AS cnt,
+        places.place_id
+    FROM
+        base_tweets,
+        places
+    WHERE
+        base_tweets.place_id = places.place_id
+    GROUP BY
+        EXTRACT(hour FROM created_at),
+        places.place_id) AS derivedTable;
+
+SELECT
+    *
+FROM
+    popular_time_per_location ();
+
+DROP FUNCTION popular_time_per_location ();
+
