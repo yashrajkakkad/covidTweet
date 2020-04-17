@@ -162,6 +162,17 @@ class TweetWordSentiment(db.Model):
     score = db.Column(db.Integer)
 
 
+class BadWord(db.Model):
+    __tablename__ = 'bad_words'
+    bad_word = db.Column(db.String(50), primary_key=True)
+
+
+class Log(db.Model):
+    __tablename__ = 'log'
+    datetime = db.Column(db.DateTime, primary_key=True)
+    info = db.Column(db.String(512))
+
+
 class Database():
 
     def __init__(self):
@@ -201,6 +212,9 @@ class Database():
                 dialect=postgresql.dialect()).__str__())
             f.write('\n')
             f.write(CreateTable(Intensity.__table__).compile(
+                dialect=postgresql.dialect()).__str__())
+            f.write('\n')
+            f.write(CreateTable(Log.__table__).compile(
                 dialect=postgresql.dialect()).__str__())
 
 

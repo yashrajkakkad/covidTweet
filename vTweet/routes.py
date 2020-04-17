@@ -109,13 +109,16 @@ def home():
             pass
 
     tweets_time_results = db.session.execute(
-        'SELECT * FROM tweets_by_time();').scalar()
+        'SELECT * FROM tweets_by_time_with_sentiment();').fetchall()
 
-    generate_wordcloud = db.session.execute(
-        'SELECT * from generate_word_cloud(ARRAY(select word from tweet_word), ARRAY(select word from tweet_word_sentiment where score > 0), ARRAY(select word from tweet_word_sentiment where score < 0));')
-    copyfile('/var/lib/postgres/data/cloud.png', 'vTweet/static/images/cloud.png')
-    copyfile('/var/lib/postgres/data/pos_cloud.png', 'vTweet/static/images/pos_cloud.png')
-    copyfile('/var/lib/postgres/data/neg_cloud.png', 'vTweet/static/images/neg_cloud.png')
+    generate_wordcloud = None
+    # generate_wordcloud = db.session.execute(
+    #     'SELECT * from generate_word_cloud(ARRAY(select word from tweet_word), ARRAY(select word from tweet_word_sentiment where score > 0), ARRAY(select word from tweet_word_sentiment where score < 0));')
+    # copyfile('/var/lib/postgres/data/cloud.png', 'vTweet/static/images/cloud.png')
+    # copyfile('/var/lib/postgres/data/pos_cloud.png', 'vTweet/static/images/pos_cloud.png')
+    # copyfile('/var/lib/postgres/data/neg_cloud.png', 'vTweet/static/images/neg_cloud.png')
+    tweets_time_results = tweets_time_results[0]
+    print(tweets_time_results)
 
     return render_template('index.html',
                            hashtag_results=hashtag_results,

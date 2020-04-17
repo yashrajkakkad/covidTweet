@@ -396,6 +396,112 @@ SELECT
 FROM
     tweets_by_time ();
 
+CREATE OR REPLACE FUNCTION tweets_by_time_with_sentiment ()
+    RETURNS TABLE (
+        p_freq integer ARRAY,
+        neg_feq integer ARRAY,
+        neu_freq integer ARRAY
+    )
+    AS $$
+DECLARE
+    positive_frequency integer ARRAY := array_fill(0, ARRAY[24]);
+    neutral_frequency integer ARRAY := array_fill(0, ARRAY[24]);
+    negative_frequency integer ARRAY := array_fill(0, ARRAY[24]);
+    freq_temp integer;
+    -- t_id_temp base_tweets.tweet_id % TYPE;
+    -- scr_temp integer;
+BEGIN
+    FOR i IN 0..23 LOOP
+        SELECT
+            COUNT(*) INTO freq_temp
+        FROM (
+            SELECT
+                tweet_word_sentiment.tweet_id,
+                sum(tweet_word_sentiment.score)
+            FROM
+                base_tweets,
+                tweet_word_sentiment
+            WHERE
+                base_tweets.tweet_id = tweet_word_sentiment.tweet_id
+                AND EXTRACT(hour FROM created_at) = i
+            GROUP BY
+                tweet_word_sentiment.tweet_id
+            HAVING
+                sum(tweet_word_sentiment.score) > 0) AS tempAlias;
+        positive_frequency[i + 1] := freq_temp;
+        SELECT
+            COUNT(*) INTO freq_temp
+        FROM (
+            SELECT
+                tweet_word_sentiment.tweet_id,
+                sum(tweet_word_sentiment.score)
+            FROM
+                base_tweets,
+                tweet_word_sentiment
+            WHERE
+                base_tweets.tweet_id = tweet_word_sentiment.tweet_id
+                AND EXTRACT(hour FROM created_at) = i
+            GROUP BY
+                tweet_word_sentiment.tweet_id
+            HAVING
+                sum(tweet_word_sentiment.score) < 0) AS tempAlias;
+        negative_frequency[i + 1] := freq_temp;
+        SELECT
+            COUNT(*) INTO freq_temp
+        FROM (
+            SELECT
+                tweet_word_sentiment.tweet_id,
+                sum(tweet_word_sentiment.score)
+            FROM
+                base_tweets,
+                tweet_word_sentiment
+            WHERE
+                base_tweets.tweet_id = tweet_word_sentiment.tweet_id
+                AND EXTRACT(hour FROM created_at) = i
+            GROUP BY
+                tweet_word_sentiment.tweet_id
+            HAVING
+                sum(tweet_word_sentiment.score) = 0) AS tempAlias;
+        neutral_frequency[i + 1] := freq_temp;
+        -- SELECT
+        --     Count(*) INTO freq_temp
+        -- FROM
+        --     base_tweets,
+        --     tweet_word_sentiment
+        -- WHERE
+        --     base_tweets.tweet_id = tweet_word_sentiment.tweet_id
+        --     AND EXTRACT(hour FROM created_at) = i
+        -- GROUP BY
+        --     (sum(tweet_word_sentiment.score))
+        -- HAVING
+        --     sum(tweet_word_sentiment.score) < 0;
+        -- negative_frequency[i + 1] := freq_temp;
+        -- SELECT
+        --     Count(*) INTO freq_temp
+        -- FROM
+        --     base_tweets,
+        --     tweet_word_sentiment
+        -- WHERE
+        --     base_tweets.tweet_id = tweet_word_sentiment.tweet_id
+        --     AND EXTRACT(hour FROM created_at) = i
+        -- GROUP BY
+        --     sum(tweet_word_sentiment.score)
+        -- HAVING
+        --     sum(tweet_word_sentiment.score) = 0;
+        -- neutral_frequency[i + 1] := freq_temp;
+    END LOOP;
+    RETURN QUERY (
+        SELECT
+            positive_frequency, negative_frequency, neutral_frequency);
+END;
+$$
+LANGUAGE plpgsql;
+
+SELECT
+    *
+FROM
+    tweets_by_time_with_sentiment ();
+
 CREATE OR REPLACE FUNCTION generate_word_cloud (words text[], pos_words text[], neg_words text[])
     RETURNS varchar
     AS $$

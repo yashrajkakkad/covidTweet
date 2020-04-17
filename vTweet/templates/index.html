@@ -1,323 +1,335 @@
-{% extends "base.html" %}
-{% block title %} vTweet {% endblock %}
-{% block scripts %}
+{% extends "base.html" %} {% block title %} vTweet {% endblock %} {% block
+scripts %}
+<script>
+  google.charts.load("current", { packages: ["corechart", "bar"] });
+  google.charts.setOnLoadCallback(drawBasic);
+
+  function drawBasic() {
+    var data = google.visualization.arrayToDataTable([
+      ["Hour of Day", "Positive Tweets", "Neutral Tweets", "Negative Tweets"],
+      {% for i in range(24) %}
+        ['{{i}}', {{tweets_time_results[0][i]}}, {{tweets_time_results[2][i]}}, {{tweets_time_results[1][i]}}],
+      {% endfor %}
+      // ['Genre', 'Fantasy & Sci Fi', 'Romance', 'Mystery/Crime', 'General',
+      //  'Western', 'Literature' ],
+      // ['2010', 10, 24, 20, 32, 18, 5],
+      // ['2020', 16, 22, 23, 30, 16, 9],
+      // ['2030', 28, 19, 29, 30, 12, 13]
+    ]);
+
+    var options = {
+    //   width: 900,
+      height: 700,
+      legend: { position: "top", maxLines: 3 },
+      bar: { groupWidth: "75%" },
+      isStacked: true,
+    };
+
+    var chart = new google.charts.Bar(document.getElementById("chart_div"));
+
+    chart.draw(data, google.charts.Bar.convertOptions(options));
+  }
+</script>
+<style>
+  @media screen and (max-width: 1080px) {
+    div#chart_div {
+      zoom: 0.6;
+      //   margin-left: -16%;
+    }
+  }
+</style>
+
+{% endblock %} {% block body %}
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">vTweet</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </nav>
+
+  <div class="container" style="padding-top: 20px;">
+    <h1 class="mt-2">Welcome to vTweet!</h1>
+    <h4 class="text-right">- Location-based tweet analysis</h4>
+  </div>
+  <hr />
+  <div class="container-fluid">
+    <div id="mapid" class="col-md-12" style="height: 500px;"></div>
     <script>
-        google.charts.load('current', {packages: ['corechart', 'bar']});
-        google.charts.setOnLoadCallback(drawBasic);
-
-        function drawBasic() {
-
-            var data = google.visualization.arrayToDataTable([
-                ['Hour of Day', 'Number of tweets',],
-                {% for freq in tweets_time_results %}
-                    ['{{ loop.index0 }}', {{ freq }}],
-                {% endfor %}
-                {#['0', 8175000],#}
-                {#['1', 3792000],#}
-                {#['2', 2695000],#}
-                {#['3', 2099000],#}
-                {#['4', 1526000]#}
-            ]);
-
-            var options = {
-                {#title: 'Population of Largest U.S. Cities',#}
-                chartArea: {width: '80%'},
-                hAxis: {
-                    title: 'Hour of Day',
-                    minValue: 0
-                },
-                vAxis: {
-                    title: '# of tweets'
-                }
-            };
-
-            var chart = new google.charts.Bar(document.getElementById('chart_div'));
-
-            chart.draw(data, google.charts.Bar.convertOptions(options));
-        }
+      var mymap = L.map("mapid").setView([23, 72], 3);
+      var mapboxAccessToken =
+          "pk.eyJ1IjoieWFzaHJhamtha2thZCIsImEiOiJjazhwaDhqbzAwNGVpM2RwcXZ0MHY0ZTN4In0.2TI2W6DhAgAUmGRK_T3Hqg";
+      L.tileLayer(
+          "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
+          {
+              attribution:
+                  'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+              maxZoom: 18,
+              id: "mapbox/streets-v11",
+              tileSize: 512,
+              zoomOffset: -1,
+              accessToken: mapboxAccessToken,
+          }
+      ).addTo(mymap);
+      var heat = L.heatLayer(
+          [
+              {% for res in heatmap_results %}
+                  [{{ res[0]}}, {{ res[1]}}, {{ res[2]}}],
+              {% endfor %}
+          ],
+          {% raw %}
+          {radius: 25, maxZoom: 3}
+          {% endraw %}
+      ).addTo(mymap);
     </script>
-
-{% endblock %}
-{% block body %}
-
-    <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">vTweet</a>
-        <button
-                class="navbar-toggler"
-                type="button"
-                data-toggle="collapse"
-                data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </nav>
-
-    <div class="container" style="padding-top: 20px;">
-        <h1 class="mt-2">Welcome to vTweet!</h1>
-        <h4 class="text-right">- Location-based tweet analysis</h4>
-    </div>
-    <hr/>
-    <div class="container-fluid">
-        <div id="mapid" class="col-md-12" style="height: 500px;"></div>
-        <script>
-            var mymap = L.map("mapid").setView([23, 72], 3);
-            var mapboxAccessToken =
-                "pk.eyJ1IjoieWFzaHJhamtha2thZCIsImEiOiJjazhwaDhqbzAwNGVpM2RwcXZ0MHY0ZTN4In0.2TI2W6DhAgAUmGRK_T3Hqg";
-            L.tileLayer(
-                "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
-                {
-                    attribution:
-                        'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                    maxZoom: 18,
-                    id: "mapbox/streets-v11",
-                    tileSize: 512,
-                    zoomOffset: -1,
-                    accessToken: mapboxAccessToken,
-                }
-            ).addTo(mymap);
-            var heat = L.heatLayer(
-                [
-                    {% for res in heatmap_results %}
-                        [{{ res[0]}}, {{ res[1]}}, {{ res[2]}}],
-                    {% endfor %}
-                ],
-                {% raw %}
-                {radius: 25, maxZoom: 3}
-                {% endraw %}
-            ).addTo(mymap);
-        </script>
-    </div>
-    <hr/>
-    <div class="container">
-        <h3>
-            Tweet frequency by time
-            <small class="text-muted">represented as a bar chart</small>
-        </h3>
-        <div id="chart_div" style="height: 500px;"/>
-
-    </div>
-    <div class="container">
-        <h3>
-            Hashtags
-            <small class="text-muted">Most popular ones with their frequency</small>
-        </h3>
-        <table class="table">
-            <thead class="thead-dark">
-            <tr>
-                <th scope="col">Hashtag</th>
-                <th scope="col">#</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for res in hashtag_results %}
-                <tr>
-                    <th scope="row">{{ res[0] }}</th>
-                    <td>{{ res[1] }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <hr/>
-    <div class="container">
-        <h3>
-            Popular users
-            <small class="text-muted">in terms of followers count</small>
-        </h3>
-        <div class="row">
-            {% for res in popular_user_results %}
-                <div class="card col-12 col-md-6 col-lg-4" style="width: 18rem;">
-                    <img src="{{ res[3].replace('_normal', '') }}" class="card-img-top"/>
-                    <div class="card-body">
-                        <h5 class="card-title">{{ res[1] }}</h5>
-                        <a
-                                class="card-text"
-                                target="_blank"
-                                href="https://twitter.com/{{ res[1] }}"
-                        >
-                            @{{ res[1] }}
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <p>Followers Count: {{ res[2] }}</p>
-                    </div>
-                </div>
-            {% endfor %}
+  </div>
+  <hr />
+  <div class="container">
+    <h3>
+      Tweet frequency by time
+      <small class="text-muted">represented as a bar chart</small>
+    </h3>
+    <div id="chart_div" style="width: 100%; height: 750px;" />
+  </div>
+  <div class="container">
+    <h3>
+      Hashtags
+      <small class="text-muted">Most popular ones with their frequency</small>
+    </h3>
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Hashtag</th>
+          <th scope="col">#</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for res in hashtag_results %}
+        <tr>
+          <th scope="row">{{ res[0] }}</th>
+          <td>{{ res[1] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <hr />
+  <div class="container">
+    <h3>
+      Popular users
+      <small class="text-muted">in terms of followers count</small>
+    </h3>
+    <div class="row">
+      {% for res in popular_user_results %}
+      <div class="card col-12 col-md-6 col-lg-4" style="width: 18rem;">
+        <img src="{{ res[3].replace('_normal', '') }}" class="card-img-top" />
+        <div class="card-body">
+          <h5 class="card-title">{{ res[1] }}</h5>
+          <a
+            class="card-text"
+            target="_blank"
+            href="https://twitter.com/{{ res[1] }}"
+          >
+            @{{ res[1] }}
+          </a>
         </div>
+        <div class="card-body">
+          <p>Followers Count: {{ res[2] }}</p>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-    <hr/>
-    <div class="container">
-        <h3>
-            Popular tweets
-            <small class="text-muted">in terms of favorite count</small>
-        </h3>
-        <div id="popularTweets" class="carousel slide" data-ride="false">
-            <div class="carousel-inner">
-                {% for res in popular_tweet_html %} {% if loop.index == 1 %}
-                    <div class="carousel-item active" style="margin: auto;">
-                        {{ res|safe }}
-                    </div>
-                {% else %}
-                    <div class="carousel-item" style="margin: auto;">
-                        {{ res|safe }} {#
+  </div>
+  <hr />
+  <div class="container">
+    <h3>
+      Popular tweets
+      <small class="text-muted">in terms of favorite count</small>
+    </h3>
+    <div id="popularTweets" class="carousel slide" data-ride="false">
+      <div class="carousel-inner">
+        {% for res in popular_tweet_html %} {% if loop.index == 1 %}
+        <div class="carousel-item active" style="margin: auto;">
+          {{ res|safe }}
+        </div>
+        {% else %}
+        <div class="carousel-item" style="margin: auto;">
+          {{ res|safe }} {#
           <img class="d-block w-100" src="..." alt="Second slide" />#}
-                    </div>
-                {% endif %} {% endfor %}
-            </div>
-            <a
-                    class="carousel-control-prev"
-                    href="#popularTweets"
-                    role="button"
-                    data-slide="prev"
-            >
-        <span
-                class="carousel-control-prev-icon"
-                aria-hidden="true"
-                style="filter: invert(1);"
-        ></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a
-                    class="carousel-control-next"
-                    href="#popularTweets"
-                    role="button"
-                    data-slide="next"
-            >
-        <span
-                class="carousel-control-next-icon"
-                aria-hidden="true"
-                style="filter: invert(1);"
-        ></span>
-                <span class="sr-only">Next</span>
-            </a>
         </div>
+        {% endif %} {% endfor %}
+      </div>
+      <a
+        class="carousel-control-prev"
+        href="#popularTweets"
+        role="button"
+        data-slide="prev"
+      >
+        <span
+          class="carousel-control-prev-icon"
+          aria-hidden="true"
+          style="filter: invert(1);"
+        ></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a
+        class="carousel-control-next"
+        href="#popularTweets"
+        role="button"
+        data-slide="next"
+      >
+        <span
+          class="carousel-control-next-icon"
+          aria-hidden="true"
+          style="filter: invert(1);"
+        ></span>
+        <span class="sr-only">Next</span>
+      </a>
     </div>
-    <hr/>
-    <div class="container">
-        <h3>
-            Most positive tweets
-            <small class="text-muted">based on their sentiment scores</small>
-        </h3>
-        <div id="positiveTweets" class="carousel slide" data-ride="false">
-            <div class="carousel-inner">
-                {% for res in positive_tweets_html %} {% if loop.index == 1 %}
-                    <div class="carousel-item active" style="margin: auto;">
-                        {{ res|safe }}
-                    </div>
-                {% else %}
-                    <div class="carousel-item" style="margin: auto;">
-                        {{ res|safe }} {#
+  </div>
+  <hr />
+  <div class="container">
+    <h3>
+      Most positive tweets
+      <small class="text-muted">based on their sentiment scores</small>
+    </h3>
+    <div id="positiveTweets" class="carousel slide" data-ride="false">
+      <div class="carousel-inner">
+        {% for res in positive_tweets_html %} {% if loop.index == 1 %}
+        <div class="carousel-item active" style="margin: auto;">
+          {{ res|safe }}
+        </div>
+        {% else %}
+        <div class="carousel-item" style="margin: auto;">
+          {{ res|safe }} {#
           <img class="d-block w-100" src="..." alt="Second slide" />#}
-                    </div>
-                {% endif %} {% endfor %}
-            </div>
-            <a
-                    class="carousel-control-prev"
-                    href="#positiveTweets"
-                    role="button"
-                    data-slide="prev"
-            >
-        <span
-                class="carousel-control-prev-icon"
-                aria-hidden="true"
-                style="filter: invert(1);"
-        ></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a
-                    class="carousel-control-next"
-                    href="#positiveTweets"
-                    role="button"
-                    data-slide="next"
-            >
-        <span
-                class="carousel-control-next-icon"
-                aria-hidden="true"
-                style="filter: invert(1);"
-        ></span>
-                <span class="sr-only">Next</span>
-            </a>
         </div>
+        {% endif %} {% endfor %}
+      </div>
+      <a
+        class="carousel-control-prev"
+        href="#positiveTweets"
+        role="button"
+        data-slide="prev"
+      >
+        <span
+          class="carousel-control-prev-icon"
+          aria-hidden="true"
+          style="filter: invert(1);"
+        ></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a
+        class="carousel-control-next"
+        href="#positiveTweets"
+        role="button"
+        data-slide="next"
+      >
+        <span
+          class="carousel-control-next-icon"
+          aria-hidden="true"
+          style="filter: invert(1);"
+        ></span>
+        <span class="sr-only">Next</span>
+      </a>
     </div>
-    <hr/>
-    <div class="container">
-        <h3>
-            Most negative tweets
-            <small class="text-muted">based on their sentiment scores</small>
-        </h3>
-        <div id="negativeTweets" class="carousel slide" data-ride="false">
-            <div class="carousel-inner">
-                {% for res in negative_tweets_html %} {% if loop.index == 1 %}
-                    <div class="carousel-item active" style="margin: auto;">
-                        {{ res|safe }}
-                    </div>
-                {% else %}
-                    <div class="carousel-item" style="margin: auto;">
-                        {{ res|safe }} {#
+  </div>
+  <hr />
+  <div class="container">
+    <h3>
+      Most negative tweets
+      <small class="text-muted">based on their sentiment scores</small>
+    </h3>
+    <div id="negativeTweets" class="carousel slide" data-ride="false">
+      <div class="carousel-inner">
+        {% for res in negative_tweets_html %} {% if loop.index == 1 %}
+        <div class="carousel-item active" style="margin: auto;">
+          {{ res|safe }}
+        </div>
+        {% else %}
+        <div class="carousel-item" style="margin: auto;">
+          {{ res|safe }} {#
           <img class="d-block w-100" src="..." alt="Second slide" />#}
-                    </div>
-                {% endif %} {% endfor %}
-            </div>
-            <a
-                    class="carousel-control-prev"
-                    href="#negativeTweets"
-                    role="button"
-                    data-slide="prev"
-            >
-        <span
-                class="carousel-control-prev-icon"
-                aria-hidden="true"
-                style="filter: invert(1);"
-        ></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a
-                    class="carousel-control-next"
-                    href="#negativeTweets"
-                    role="button"
-                    data-slide="next"
-            >
-        <span
-                class="carousel-control-next-icon"
-                aria-hidden="true"
-                style="filter: invert(1);"
-        ></span>
-                <span class="sr-only">Next</span>
-            </a>
         </div>
+        {% endif %} {% endfor %}
+      </div>
+      <a
+        class="carousel-control-prev"
+        href="#negativeTweets"
+        role="button"
+        data-slide="prev"
+      >
+        <span
+          class="carousel-control-prev-icon"
+          aria-hidden="true"
+          style="filter: invert(1);"
+        ></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a
+        class="carousel-control-next"
+        href="#negativeTweets"
+        role="button"
+        data-slide="next"
+      >
+        <span
+          class="carousel-control-next-icon"
+          aria-hidden="true"
+          style="filter: invert(1);"
+        ></span>
+        <span class="sr-only">Next</span>
+      </a>
     </div>
-    <hr>
-    <div class="container">
-        <h3>
-            Wordclouds of tweets
-            <small class="text-muted">based on the frequency of words</small>
-        </h3>
-        <div class="card-group">
-            <div class="card">
-                <img class="card-img-top" src="static/images/cloud.png" alt="Card image cap">
-                <div class="card-body">
-                <h5 class="card-title">Word cloud of all tweets</h5>
-                </div>
-            </div>
-            <div class="card">
-                <img class="card-img-top" src="static/images/pos_cloud.png" alt="Card image cap">
-                <div class="card-body">
-                <h5 class="card-title">Word cloud of positive tweets</h5>
-                </div>
-            </div>
-            <div class="card">
-                <img class="card-img-top" src="static/images/neg_cloud.png" alt="Card image cap">
-                <div class="card-body">
-                <h5 class="card-title">Word cloud of negative tweets</h5>
-                </div>
-            </div>
-        </div>    
+  </div>
+  <hr />
+  <div class="container">
+    <h3>
+      Wordclouds of tweets
+      <small class="text-muted">based on the frequency of words</small>
+    </h3>
+    <div class="card-group">
+      <div class="card">
+        <img
+          class="card-img-top"
+          src="static/images/cloud.png"
+          alt="Card image cap"
+        />
+        <div class="card-body">
+          <h5 class="card-title">Word cloud of all tweets</h5>
+        </div>
+      </div>
+      <div class="card">
+        <img
+          class="card-img-top"
+          src="static/images/pos_cloud.png"
+          alt="Card image cap"
+        />
+        <div class="card-body">
+          <h5 class="card-title">Word cloud of positive tweets</h5>
+        </div>
+      </div>
+      <div class="card">
+        <img
+          class="card-img-top"
+          src="static/images/neg_cloud.png"
+          alt="Card image cap"
+        />
+        <div class="card-body">
+          <h5 class="card-title">Word cloud of negative tweets</h5>
+        </div>
+      </div>
     </div>
-    {#
+  </div>
+  {#
   <!-- {% block map %}{% endblock %} -->#} {#
   <!-- <div id="map" style="width: 900px; height: 580px"></div>#}
     {#    <script>#}
@@ -358,6 +370,6 @@
     {#        )#}
     {#        .addTo(map);#}
     {#    </script> -->#}
-    </body>
+</body>
 
 {% endblock %}
