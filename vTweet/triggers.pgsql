@@ -1,22 +1,10 @@
--- CREATE OR REPLACE FUNCTION increment_hashtag_frequency()
---     RETURNS TRIGGER
---     AS $BODY$
--- DECLARE
---     hashtag_temp hashtags.hashtag%type;
---     frequency_temp
--- BEGIN
---     SELECT hashtag INTO hashtag_temp FROM hashtags WHERE hashtag = NEW.hashtag;
---     IF hashtag_temp IS NOT NULL THEN
---     END IF;
--- END;
--- $BODY$
-
 CREATE OR REPLACE FUNCTION log_tweets ()
     RETURNS TRIGGER
     AS $$
 BEGIN
     INSERT INTO log
         VALUES (now(), Format('Tweet %s inserted', NEW.tweet_id_str));
+    RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;
@@ -25,6 +13,54 @@ CREATE TRIGGER tr_log_tweets
     AFTER INSERT ON base_tweets
     FOR EACH ROW
     EXECUTE PROCEDURE log_tweets ();
+
+CREATE OR REPLACE FUNCTION log_hashtags ()
+    RETURNS TRIGGER
+    AS $$
+BEGIN
+    INSERT INTO log
+        VALUES (now(), Format('Hashtag %s inserted', NEW.hashtag));
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_log_hashtags
+    AFTER INSERT ON hashtags
+    FOR EACH ROW
+    EXECUTE PROCEDURE log_hashtags ();
+
+CREATE OR REPLACE FUNCTION log_places ()
+    RETURNS TRIGGER
+    AS $$
+BEGIN
+    INSERT INTO log
+        VALUES (now(), Format('Place %s inserted', NEW.place_id));
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_log_places
+    AFTER INSERT ON places
+    FOR EACH ROW
+    EXECUTE PROCEDURE log_places ();
+
+CREATE OR REPLACE FUNCTION log_users ()
+    RETURNS TRIGGER
+    AS $$
+BEGIN
+    INSERT INTO log
+        VALUES (now(), Format('User %s inserted', NEW.screen_name));
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_log_users
+    AFTER INSERT ON users
+    FOR EACH ROW
+    EXECUTE PROCEDURE log_users ();
 
 CREATE OR REPLACE FUNCTION is_possibly_sensitive ()
     RETURNS TRIGGER
@@ -43,6 +79,7 @@ BEGIN
             NEW.possibly_sensitive := TRUE;
         END IF;
     END LOOP;
+    RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;
@@ -171,19 +208,21 @@ CREATE OR REPLACE FUNCTION delete_places_countries ()
     RETURNS TRIGGER
     AS $$
 BEGIN
-    DELETE FROM place
+    DELETE FROM places
     WHERE place_id NOT IN (
             SELECT
                 place_id
             FROM
                 base_tweets);
+    RAISE NOTICE 'Place deleted';
     DELETE FROM countries
     WHERE country_code NOT IN (
             SELECT
                 country_code
             FROM
                 places);
-    RETURN NULL;
+    RAISE NOTICE 'Country deleted';
+    RETURN OLD;
 END;
 $$
 LANGUAGE plpgsql;
