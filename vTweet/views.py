@@ -65,10 +65,13 @@ def fetch_tweet_data():
 
 
 def insert_tweet_data():
+    count = 1
     with open('tweets.pickle', 'rb') as f:
         while True:
             try:
                 status = pickle.load(f)
+                print('Inserting #', count)
+                count += 1
                 insert_tweets_from_object(status)
             except EOFError:
                 return
@@ -173,15 +176,15 @@ def insert_tweets_data(query):
 
 def insert_hashtags(json_dict):
     hashtags = json_dict['entities']['hashtags']
-    hashtag_models = [Hashtag(hashtag=hashtags[i]['text'])
+    hashtag_models = [Hashtag(hashtag=hashtags[i]['text'], frequency=1)
                       for i in range(len(hashtags))]
 
     for tag in hashtag_models:
         logger.info(tag.hashtag)
-        db.session.execute(
-            "CALL increment_hashtag_frequency(\'{}\')".format(tag.hashtag))
+        # db.session.execute(
+        #     "CALL increment_hashtag_frequency(\'{}\')".format(tag.hashtag))
 
-        # db.session.add(tag)
+        db.session.add(tag)
         # TODO: Replace this exception handling mechanism by an SQL trigger
         try:
             db.session.commit()

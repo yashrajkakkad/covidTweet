@@ -56,35 +56,34 @@ LANGUAGE plpgsql;
 -- $$
 -- LANGUAGE plpgsql;
 -- Increment Hashtag Frequency (Use this instead of directly inserting to Hashtag table)
-
-CREATE OR REPLACE PROCEDURE increment_hashtag_frequency (hashtag_name varchar
-)
-    AS $$
-DECLARE
-    hashtag_freq integer;
-BEGIN
-    SELECT
-        frequency INTO hashtag_freq
-    FROM
-        hashtags
-    WHERE
-        hashtag = hashtag_name;
-    IF hashtag_freq IS NULL THEN
-        INSERT INTO hashtags
-            VALUES (hashtag_name, 1);
-    ELSE
-        UPDATE
-            hashtags
-        SET
-            frequency = hashtag_freq + 1
-        WHERE
-            hashtag = hashtag_name;
-    END IF;
-END;
-$$
-LANGUAGE plpgsql;
-
+-- CREATE OR REPLACE PROCEDURE increment_hashtag_frequency (hashtag_name varchar
+-- )
+--     AS $$
+-- DECLARE
+--     hashtag_freq integer;
+-- BEGIN
+--     SELECT
+--         frequency INTO hashtag_freq
+--     FROM
+--         hashtags
+--     WHERE
+--         hashtag = hashtag_name;
+--     IF hashtag_freq IS NULL THEN
+--         INSERT INTO hashtags
+--             VALUES (hashtag_name, 1);
+--     ELSE
+--         UPDATE
+--             hashtags
+--         SET
+--             frequency = hashtag_freq + 1
+--         WHERE
+--             hashtag = hashtag_name;
+--     END IF;
+-- END;
+-- $$
+-- LANGUAGE plpgsql;
 -- Most popular hashtags
+
 CREATE OR REPLACE FUNCTION most_popular_hashtags ()
     RETURNS TABLE (
         LIKE hashtags
@@ -145,27 +144,27 @@ DECLARE
             places.place_id;
     rec_coordinates RECORD;
     intensity_temp numeric(2, 1);
-    BEGIN
-        DELETE FROM intensity;
-        OPEN cur_coordinates;
-        LOOP
-            FETCH cur_coordinates INTO rec_coordinates;
-            EXIT
-            WHEN NOT FOUND;
-            IF rec_coordinates.cnt >= 3 THEN
-                intensity_temp := 1;
-            ELSIF rec_coordinates.cnt = 2 THEN
-                intensity_temp := 0.8;
-            ELSE
-                intensity_temp := 0.6;
-            END IF;
-            INSERT INTO intensity
-                VALUES (rec_coordinates.latitude, rec_coordinates.longitude, intensity_temp);
-        END LOOP;
-        RETURN QUERY (
-            SELECT
-                * FROM intensity);
-    END;
+BEGIN
+    DELETE FROM intensity;
+    OPEN cur_coordinates;
+    LOOP
+        FETCH cur_coordinates INTO rec_coordinates;
+        EXIT
+        WHEN NOT FOUND;
+        IF rec_coordinates.cnt >= 3 THEN
+            intensity_temp := 1;
+        ELSIF rec_coordinates.cnt = 2 THEN
+            intensity_temp := 0.8;
+        ELSE
+            intensity_temp := 0.6;
+        END IF;
+        INSERT INTO intensity
+            VALUES (rec_coordinates.latitude, rec_coordinates.longitude, intensity_temp);
+    END LOOP;
+    RETURN QUERY (
+        SELECT
+            * FROM intensity);
+END;
 $$
 LANGUAGE plpgsql;
 

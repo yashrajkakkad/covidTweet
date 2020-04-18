@@ -248,3 +248,31 @@ CREATE TRIGGER tr_delete_word_sentiment
     FOR EACH ROW
     EXECUTE PROCEDURE delete_word_sentiment ();
 
+CREATE OR REPLACE FUNCTION increment_hashtag_frequency ()
+    RETURNS TRIGGER
+    AS $$
+DECLARE
+    hashtag_freq integer;
+BEGIN
+    SELECT
+        frequency INTO hashtag_freq
+    FROM
+        hashtags
+    WHERE
+        hashtag = NEW.hashtag;
+    IF hashtag_freq IS NULL THEN
+        RETURN NEW;
+    ELSE
+        UPDATE hashtags SET frequency = frequency+1 WHERE hashtag=NEW.hashtag;
+        -- OLD.frequency = OLD.frequency + 1;
+        RETURN NULL;
+    END IF;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_increment_hashtag_frequency
+    BEFORE INSERT ON hashtags
+    FOR EACH ROW
+    EXECUTE PROCEDURE increment_hashtag_frequency ();
+
