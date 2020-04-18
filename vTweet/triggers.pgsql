@@ -214,14 +214,12 @@ BEGIN
                 place_id
             FROM
                 base_tweets);
-    RAISE NOTICE 'Place deleted';
     DELETE FROM countries
     WHERE country_code NOT IN (
             SELECT
                 country_code
             FROM
                 places);
-    RAISE NOTICE 'Country deleted';
     RETURN OLD;
 END;
 $$
