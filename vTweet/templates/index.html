@@ -62,42 +62,7 @@ scripts %}
     <h4 class="text-right">- Location-based tweet analysis</h4>
   </div>
   <hr />
-<<<<<<< HEAD
-  <div class="container-fluid">
-    <div id="mapid" class="col-md-12" style="height: 500px;"></div>
-    <script>
-      var mymap = L.map("mapid").setView([23, 72], 3);
-      var mapboxAccessToken =
-          "pk.eyJ1IjoieWFzaHJhamtha2thZCIsImEiOiJjazhwaDhqbzAwNGVpM2RwcXZ0MHY0ZTN4In0.2TI2W6DhAgAUmGRK_T3Hqg";
-      L.tileLayer(
-          "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
-          {
-              attribution:
-                  'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-              maxZoom: 18,
-              id: "mapbox/streets-v11",
-              tileSize: 512,
-              zoomOffset: -1,
-              accessToken: mapboxAccessToken,
-          }
-      ).addTo(mymap);
-      var heat = L.heatLayer(
-          [
-              {% for res in heatmap_results %}
-                  [{{ res[0]}}, {{ res[1]}}, {{ res[2]}}],
-              {% endfor %}
-          ],
-          {% raw %}
-          {radius: 25, maxZoom: 3}
-          {% endraw %}
-      ).addTo(mymap);
-    </script>
-  </div>
-  <hr />
-  <div class="container-fluid">
-=======
   <div class="container">
->>>>>>> 9fa3234... Maps are tabbed now
     <h3>
       Heatmaps
       <small class="text-muted">intensity based on different parameters</small>
@@ -106,13 +71,13 @@ scripts %}
       <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#numberoftweets">Number of tweets posted</a>
+                <a id='tab1' class="nav-link active" data-toggle="tab" href="#numberoftweets">Number of tweets posted</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#mostactivehour">Most active hour of the day</a>
+                <a id='tab2' class="nav-link" data-toggle="tab" href="#mostactivehour">Most active hour of the day</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#meansentimentscore">Mean sentiment score</a>
+                <a id='tab3' class="nav-link" data-toggle="tab" href="#meansentimentscore">Mean sentiment score</a>
             </li>
         </ul>
       </div>
@@ -147,6 +112,9 @@ scripts %}
                     {radius: 25, maxZoom: 3}
                     {% endraw %}
                 ).addTo(mymap);
+                $( "#tab1" ).on('shown.bs.tab', function (e) {
+                  mymap.invalidateSize(false);
+                });
             </script>
             </div>
           </div>
@@ -172,55 +140,14 @@ scripts %}
                   }
               ).addTo(mymap2);
 
-<<<<<<< HEAD
-      {% for res in activity_hours_by_place %}
-          L.marker( [{{ res[3] }}, {{ res[4] }}] )
-            .bindPopup( 'Time: {{ res[0] }} hours <br> Location: {{ res[2] }}' )
-            .addTo( mymap2 );
-      {% endfor %}
-    </script>
-  </div>
-  <hr />
-  <div class="container-fluid">
-    <h3>
-      Mean sentiment scores by location
-    </h3>
-    <div id="mapid3" class="col-md-12" style="height: 500px;"></div>
-    <script>
-      var mymap3 = L.map("mapid3").setView([23, 72], 3);
-      var mapboxAccessToken =
-          "pk.eyJ1IjoieWFzaHJhamtha2thZCIsImEiOiJjazhwaDhqbzAwNGVpM2RwcXZ0MHY0ZTN4In0.2TI2W6DhAgAUmGRK_T3Hqg";
-      L.tileLayer(
-          "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
-          {
-              attribution:
-                  'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-              maxZoom: 18,
-              id: "mapbox/streets-v11",
-              tileSize: 512,
-              zoomOffset: -1,
-              accessToken: mapboxAccessToken,
-          }
-      ).addTo(mymap3);
-
-      var heat = L.heatLayer(
-          [
-              {% for res in mean_sentiment_scores_by_location %}
-                  [{{ res[3]}}, {{ res[4]}}, {% if res[2] %}{{ res[2]+1 }}{% else %} {{ 1 }} {% endif %}],
-              {% endfor %}
-          ],
-          {% raw %}
-          {radius: 25, maxZoom: 3, max: 2.0}
-          {% endraw %}
-      ).addTo(mymap3);
-    </script>
-=======
               {% for res in activity_hours_by_place %}
                   L.marker( [{{ res[3] }}, {{ res[4] }}] )
                     .bindPopup( 'Time: {{ res[0] }} hours <br> Location: {{ res[2] }}' )
                     .addTo( mymap2 );
               {% endfor %}
-
+              $( "#tab2" ).on('shown.bs.tab', function (e) {
+                mymap2.invalidateSize(false);
+              });
               </script>
             </div>
           </div>
@@ -232,38 +159,40 @@ scripts %}
               <script>
                 var mymap3 = L.map("mapid3").setView([23, 72], 3);
                 var mapboxAccessToken =
-                    "pk.eyJ1IjoieWFzaHJhamtha2thZCIsImEiOiJjazhwaDhqbzAwNGVpM2RwcXZ0MHY0ZTN4In0.2TI2W6DhAgAUmGRK_T3Hqg";
+                "pk.eyJ1IjoieWFzaHJhamtha2thZCIsImEiOiJjazhwaDhqbzAwNGVpM2RwcXZ0MHY0ZTN4In0.2TI2W6DhAgAUmGRK_T3Hqg";
                 L.tileLayer(
-                    "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
-                    {
-                        attribution:
-                            'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                        maxZoom: 18,
-                        id: "mapbox/streets-v11",
-                        tileSize: 512,
-                        zoomOffset: -1,
-                        accessToken: mapboxAccessToken,
-                    }
-                ).addTo(mymap3);
+                  "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
+                  {
+                    attribution:
+                    'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 18,
+                    id: "mapbox/streets-v11",
+                    tileSize: 512,
+                    zoomOffset: -1,
+                    accessToken: mapboxAccessToken,
+                  }
+                  ).addTo(mymap3);
+
+                $( "#tab3" ).on('shown.bs.tab', function (e) {
+                  mymap3.invalidateSize(false);
+                });
 
                 var heat = L.heatLayer(
                     [
                         {% for res in mean_sentiment_scores_by_location %}
-                            [{{ res[3]}}, {{ res[4]}}, {{ res[2]+1}}],
+                            [{{ res[3]}}, {{ res[4]}}, {% if res[2] %}{{ res[2]+1 }}{% else %} {{ 1 }} {% endif %}],
                         {% endfor %}
                     ],
                     {% raw %}
                     {radius: 25, maxZoom: 3, max: 2.0}
                     {% endraw %}
                 ).addTo(mymap3);
-
               </script>
             </div>
           </div>
         </div>
       </div>
     </div>
->>>>>>> 9fa3234... Maps are tabbed now
   </div>
   <hr>
   <div class="container">
