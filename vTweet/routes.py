@@ -151,8 +151,9 @@ def delete_tweet():
             'CALL fetch_data_to_be_deleted({});'.format(tweet_id))
         tbd_data = db.session.execute('SELECT * FROM tbd_data;')
         db.session.execute('DELETE FROM tbd_data WHERE TRUE;')
+        # Commiting this way also commits the subsequent delete operations
         db.session.execute(
-            'DELETE FROM base_tweets WHERE base_tweets.tweet_id={};'.format(tweet_id))
+            'BEGIN; DELETE FROM base_tweets WHERE base_tweets.tweet_id={}; COMMIT;'.format(tweet_id))
         return render_template('delete_tweet_success.html',
                                tweet_id=tweet_id,
                                tbd_data=tbd_data)
