@@ -120,10 +120,10 @@ def home():
     tweets_time_results = tweets_time_results[0]
 
     activity_hours_by_place = db.session.execute(
-        'SELECT * FROM most_active_time_per_location();')
+        'SELECT * FROM most_active_time_per_location();').fetchall()
 
     mean_sentiment_scores_by_location = db.session.execute(
-        'SELECT * FROM mean_sentiment_scores_by_location();')
+        'SELECT * FROM mean_sentiment_scores_by_location();').fetchall()
 
     return render_template('index.html',
                            hashtag_results=hashtag_results,

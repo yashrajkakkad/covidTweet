@@ -92,7 +92,7 @@ scripts %}
       ).addTo(mymap);
     </script>
   </div>
-  <hr>
+  <hr />
   <div class="container-fluid">
     <h3>
       Most active hours by place
@@ -120,10 +120,9 @@ scripts %}
             .bindPopup( 'Time: {{ res[0] }} hours <br> Location: {{ res[2] }}' )
             .addTo( mymap2 );
       {% endfor %}
-
     </script>
-  </div>  
-  <hr>
+  </div>
+  <hr />
   <div class="container-fluid">
     <h3>
       Mean sentiment scores by location
@@ -149,14 +148,13 @@ scripts %}
       var heat = L.heatLayer(
           [
               {% for res in mean_sentiment_scores_by_location %}
-                  [{{ res[3]}}, {{ res[4]}}, {{ res[2]+1}}],
+                  [{{ res[3]}}, {{ res[4]}}, {% if res[2] %}{{ res[2]+1 }}{% else %} {{ 1 }} {% endif %}],
               {% endfor %}
           ],
           {% raw %}
           {radius: 25, maxZoom: 3, max: 2.0}
           {% endraw %}
       ).addTo(mymap3);
-
     </script>
   </div>
   <div class="container">
@@ -365,15 +363,21 @@ scripts %}
     <div class="card text-center">
       <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">
-            <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#all">All tweets</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#positive">Positive tweets</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#negative">Negative tweets</a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#all"
+              >All tweets</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#positive"
+              >Positive tweets</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#negative"
+              >Negative tweets</a
+            >
+          </li>
         </ul>
       </div>
       <div class="tab-content card-body">
@@ -406,7 +410,7 @@ scripts %}
         </div>
       </div>
     </div>
-</div>
+  </div>
   {#
   <!-- {% block map %}{% endblock %} -->#} {#
   <!-- <div id="map" style="width: 900px; height: 580px"></div>#}
