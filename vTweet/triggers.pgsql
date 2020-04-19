@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION log_tweets ()
     AS $$
 BEGIN
     INSERT INTO log
-        VALUES (now(), Format('Tweet %s inserted', NEW.tweet_id_str));
+        VALUES (now() + interval '1s', Format('Tweet %s inserted', NEW.tweet_id_str));
     RETURN NEW;
 END;
 $$
@@ -284,4 +284,33 @@ CREATE TRIGGER tr_increment_hashtag_frequency
     BEFORE INSERT ON hashtags
     FOR EACH ROW
     EXECUTE PROCEDURE increment_hashtag_frequency ();
+
+CREATE OR REPLACE FUNCTION is_possibly_sensitive ()
+    RETURNS TRIGGER
+    AS $$
+DECLARE
+    c_bad_words CURSOR FOR
+        SELECT
+            *
+        FROM
+            bad_words;
+    r_bad_words RECORD;
+    flag boolean := FALSE;
+BEGIN
+    FOR r_bad_words IN c_bad_words LOOP
+        IF POSITION(r_bad_words.bad_word IN OLD.tweet_text) <> 0 THEN
+            NEW.possibly_sensitive := TRUE;
+            INSERT INTO log
+                VALUES (now(), Format('Tweet %s marked as possibly sensitive', OLD.tweet_id));
+        END IF;
+    END LOOP;
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_is_possibly_sensitive
+    BEFORE INSERT ON base_tweets
+    FOR EACH ROW
+    EXECUTE PROCEDURE is_possibly_sensitive ();
 
