@@ -136,6 +136,29 @@ def home():
                            mean_sentiment_scores_by_location=mean_sentiment_scores_by_location)
 
 
+@app.route('/log')
+def log():
+    logger_results = db.session.execute('SELECT * FROM log;')
+    return render_template('log.html',
+                           logger_results=logger_results)
+
+
+@app.route('/delete', methods=['GET', 'POST'])
+def delete_tweet():
+    if request.method == 'POST':
+        tweet_id = request.form['tweet_id']
+        db.session.execute(
+            'CALL fetch_data_to_be_deleted({});'.format(tweet_id))
+        tbd_data = db.session.execute('SELECT * FROM tbd_data;')
+        db.session.execute('DELETE FROM tbd_data WHERE TRUE;')
+        db.session.execute(
+            'DELETE FROM base_tweets WHERE base_tweets.tweet_id={};'.format(tweet_id))
+        return render_template('delete_tweet_success.html',
+                               tweet_id=tweet_id,
+                               tbd_data=tbd_data)
+    return render_template('delete_tweet.html')
+
+
 @app.route('/fetch')
 def fetch():
     tweet_ids = fetch_tweet_ids()

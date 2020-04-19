@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from decouple import config
-import dash
 import tweepy
 
 # Init main Flask app
