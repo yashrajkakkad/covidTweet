@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block title %} vTweet - logger {% endblock %} {% block body %}
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">vTweet</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </nav>
+
+  <div class="container" style="padding-top: 20px;">
+    <h1 class="mt-2">Welcome to vTweet!</h1>
+    <h4 class="text-right">- Location-based tweet analysis</h4>
+  </div>
+  <hr>
+
+  <div class="container">
+    <h3>
+      Delete by tweet ID
+    </h3>
+    <form method="POST">
+      <div class="form-group">
+        <label for="tweet_id">Tweet ID</label>
+        <input type="text" class="form-control" id="tweet_id" name="tweet_id" placeholder="Enter tweet ID">
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</body>
+
+{% endblock %}
