@@ -138,7 +138,8 @@ def home():
 
 @app.route('/log')
 def log():
-    logger_results = db.session.execute('SELECT * FROM log;')
+    logger_results = db.session.execute(
+        'SELECT * FROM log ORDER BY datetime DESC;')
     return render_template('log.html',
                            logger_results=logger_results)
 
