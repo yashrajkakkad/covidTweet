@@ -77,6 +77,8 @@ BEGIN
     FOR r_bad_words IN c_bad_words LOOP
         IF POSITION(r_bad_words.bad_word IN NEW.tweet_text) <> 0 THEN
             NEW.possibly_sensitive := TRUE;
+            INSERT INTO log
+                VALUES (now(), Format('Tweet %s marked as possibly sensitive', OLD.tweet_id));
         END IF;
     END LOOP;
     RETURN NEW;
@@ -263,7 +265,14 @@ BEGIN
     IF hashtag_freq IS NULL THEN
         RETURN NEW;
     ELSE
-        UPDATE hashtags SET frequency = frequency+1 WHERE hashtag=NEW.hashtag;
+        UPDATE
+            hashtags
+        SET
+            frequency = frequency + 1
+        WHERE
+            hashtag = NEW.hashtag;
+        INSERT INTO log
+            VALUES (now(), Format('Frequency of hashtag %s incremented', NEW.hashtag));
         -- OLD.frequency = OLD.frequency + 1;
         RETURN NULL;
     END IF;
