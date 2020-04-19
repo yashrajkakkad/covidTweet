@@ -624,3 +624,90 @@ SELECT
 FROM
     mean_sentiment_scores_by_location ();
 
+CREATE OR REPLACE PROCEDURE fetch_data_to_be_deleted (tweetID bigint
+)
+    AS $$
+DECLARE
+    c_tweet_hashtag CURSOR FOR
+        SELECT
+            hashtag
+        FROM
+            tweet_hashtag
+        WHERE
+            tweet_id = tweetID;
+    c_users CURSOR FOR (
+        SELECT
+            user_id
+        FROM
+            tweet_users
+        WHERE
+            tweet_id = tweetID)
+UNION (
+    SELECT
+        user_id
+    FROM
+        retweeted_users
+    WHERE
+        tweet_id = tweetID)
+UNION (
+    SELECT
+        user_id
+    FROM
+        mentioned_users
+    WHERE
+        tweet_id = tweetID);
+    c_places CURSOR FOR
+        SELECT
+            pid
+        FROM (
+            SELECT
+                tweet_id AS tid,
+                place_id AS pid,
+                COUNT(place_id) OVER (PARTITION BY place_id) AS cnt
+            FROM
+                base_tweets
+            WHERE
+                place_id IS NOT NULL
+            GROUP BY
+                tweet_id) AS tbl
+    WHERE
+        cnt = 1
+        AND tid = tweetID;
+    c_countries CURSOR (p_id places.place_id % TYPE)
+    FOR
+        SELECT
+            code
+        FROM (
+            SELECT
+                place_id AS pid,
+                country_code AS code,
+                COUNT(country_code) OVER (PARTITION BY country_code) AS cnt
+            FROM
+                places
+            GROUP BY
+                place_id) AS tbl
+    WHERE
+        cnt = 1
+        AND pid = p_id;
+    BEGIN
+        FOR r_hashtag IN c_tweet_hashtag LOOP
+            INSERT INTO tbd_data
+                VALUES ('Hashtag', 'hashtag', r_hashtag.hashtag);
+        END LOOP;
+        FOR r_users IN c_users LOOP
+            INSERT INTO tbd_data
+                VALUES ('User', 'user_id', r_users.user_id::varchar);
+        END LOOP;
+        FOR r_places IN c_places LOOP
+            INSERT INTO tbd_data
+                VALUES ('Place', 'place_id', r_places.pid::varchar);
+            FOR r_countries IN c_countries (r_places.pid)
+            LOOP
+                INSERT INTO tbd_data
+                    VALUES ('Country', 'country_code', r_countries.code);
+            END LOOP;
+        END LOOP;
+    END;
+$$
+LANGUAGE plpgsql;
+
