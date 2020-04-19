@@ -173,6 +173,13 @@ class Log(db.Model):
     info = db.Column(db.String(512))
 
 
+class TBDData(db.Model):
+    __tablename__ = 'tbd_data'
+    entity = db.Column(db.String(512), primary_key=True)
+    identifier = db.Column(db.String(512), primary_key=True)
+    identifier_value = db.Column(db.String(512), primary_key=True)
+
+
 class Database():
 
     def __init__(self):
@@ -215,6 +222,9 @@ class Database():
                 dialect=postgresql.dialect()).__str__())
             f.write('\n')
             f.write(CreateTable(Log.__table__).compile(
+                dialect=postgresql.dialect()).__str__())
+            f.write('\n')
+            f.write(CreateTable(TBDData.__table__).compile(
                 dialect=postgresql.dialect()).__str__())
 
 
