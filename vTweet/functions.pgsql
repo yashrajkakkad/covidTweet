@@ -296,7 +296,8 @@ BEGIN
             AND tweet_users.user_id = users.id
             AND (base_tweets.tweet_id IN (
                     SELECT
-                        tweet_word_sentiment.tweet_id FROM tweet_word_sentiment GROUP BY tweet_word_sentiment.tweet_id ORDER BY (sum(tweet_word_sentiment.score)) DESC LIMIT 5)));
+                        tweet_word_sentiment.tweet_id FROM tweet_word_sentiment GROUP BY tweet_word_sentiment.tweet_id
+                    HAVING (sum(tweet_word_sentiment.score)) IS NOT NULL ORDER BY (sum(tweet_word_sentiment.score)) DESC LIMIT 5)));
 END;
 $$
 LANGUAGE plpgsql;
@@ -316,8 +317,9 @@ BEGIN
             AND tweet_users.user_id = users.id
             AND (base_tweets.tweet_id IN (
                     SELECT
-                        tweet_word_sentiment.tweet_id FROM tweet_word_sentiment GROUP BY tweet_word_sentiment.tweet_id ORDER BY (sum(tweet_word_sentiment.score))
-            LIMIT 5)));
+                        tweet_word_sentiment.tweet_id FROM tweet_word_sentiment GROUP BY tweet_word_sentiment.tweet_id
+                    HAVING (sum(tweet_word_sentiment.score)) IS NOT NULL ORDER BY (sum(tweet_word_sentiment.score))
+        LIMIT 5)));
 END;
 $$
 LANGUAGE plpgsql;
@@ -613,7 +615,9 @@ BEGIN
                     base_tweets.tweet_id FROM base_tweets
                 WHERE
                     base_tweets.place_id IS NOT NULL)
-            AND tweet_word_sentiment.tweet_id = base_tweets.tweet_id GROUP BY tweet_word_sentiment.tweet_id, base_tweets.place_id ORDER BY sum(tweet_word_sentiment.score)) AS tbl, places
+            AND tweet_word_sentiment.tweet_id = base_tweets.tweet_id GROUP BY tweet_word_sentiment.tweet_id, base_tweets.place_id
+        HAVING
+            sum(tweet_word_sentiment.score) IS NOT NULL ORDER BY sum(tweet_word_sentiment.score)) AS tbl, places
     WHERE
         places.place_id = place GROUP BY place, places.name, places.latitude, places.longitude);
 END;
@@ -710,4 +714,48 @@ UNION (
     END;
 $$
 LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION max_min_mean_sentiment_scores ()
+    RETURNS TABLE (
+        mean_scores numeric)
+    LANGUAGE 'plpgsql'
+    AS $$
+BEGIN
+    RETURN QUERY ((
+        SELECT
+            sum(score_sum)
+        FROM (
+            SELECT
+                tweet_word_sentiment.tweet_id, sum(tweet_word_sentiment.score) AS score_sum, base_tweets.place_id AS place FROM tweet_word_sentiment, base_tweets
+        WHERE
+            tweet_word_sentiment.tweet_id IN (
+                SELECT
+                    base_tweets.tweet_id FROM base_tweets
+                WHERE
+                    base_tweets.place_id IS NOT NULL)
+            AND tweet_word_sentiment.tweet_id = base_tweets.tweet_id GROUP BY tweet_word_sentiment.tweet_id, base_tweets.place_id
+        HAVING
+            sum(tweet_word_sentiment.score) IS NOT NULL ORDER BY sum(tweet_word_sentiment.score)) AS tbl, places
+    WHERE
+        places.place_id = place GROUP BY place, places.name, places.latitude, places.longitude ORDER BY sum(score_sum) DESC LIMIT 1)
+UNION ALL (
+    SELECT
+        sum(score_sum)
+    FROM (
+        SELECT
+            tweet_word_sentiment.tweet_id, sum(tweet_word_sentiment.score) AS score_sum, base_tweets.place_id AS place FROM tweet_word_sentiment, base_tweets
+    WHERE
+        tweet_word_sentiment.tweet_id IN (
+            SELECT
+                base_tweets.tweet_id FROM base_tweets
+            WHERE
+                base_tweets.place_id IS NOT NULL)
+        AND tweet_word_sentiment.tweet_id = base_tweets.tweet_id GROUP BY tweet_word_sentiment.tweet_id, base_tweets.place_id
+    HAVING
+        sum(tweet_word_sentiment.score) IS NOT NULL ORDER BY sum(tweet_word_sentiment.score)) AS tbl, places
+WHERE
+    places.place_id = place GROUP BY place, places.name, places.latitude, places.longitude ORDER BY sum(score_sum)
+LIMIT 1));
+END;
+$$;
 
