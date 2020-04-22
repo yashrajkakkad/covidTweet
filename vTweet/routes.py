@@ -178,3 +178,25 @@ def fetch():
             pass
         print(i)
     return render_template_string('All tweets fetched into the pickle file')
+
+
+@app.route('/insert', methods=['GET', 'POST'])
+def insert():
+    alert_message = None
+    green_message = None
+    if request.method == 'POST':
+        tweet_id = request.form['tweet_id']
+        try:
+            status = api.statuses_lookup([tweet_id], include_entities=True)
+            if len(status) == 0:
+                raise Exception('No tweet')
+            try:
+                print(type(status))
+                print(status)
+                insert_tweets_from_object(status[0])
+                green_message = 'Tweet inserted successfully'
+            except Exception:
+                alert_message = 'Something went wrong while inserting the tweet in the database'
+        except Exception:
+            alert_message = 'Invalid Tweet ID / Connectivity issue'
+    return render_template('insert.html', alert_message=alert_message, green_message=green_message)
