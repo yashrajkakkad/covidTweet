@@ -218,15 +218,20 @@ def insert_place(json_dict):
         # except KeyError:
         #     pass
         db.session.add(place)
-        db.session.add(country)
     except (TypeError, AttributeError) as e:
+        print(e)
         pass
     try:
         db.session.commit()
-    except (sqlIntegrityError, sqlPKError):
+    except (sqlIntegrityError, sqlPKError) as e:
+        print(e)
         db.session.rollback()
-        pass
-
+        # pass
+    db.session.add(country)
+    try:
+        db.session.commit()
+    except (sqlIntegrityError, sqlPKError) as e:
+        db.session.rollback()
     return place_id
 
 
@@ -265,7 +270,8 @@ def insert_tweet(json_dict, place_id):
     try:
         db.session.commit()
         logger.info(tweet.tweet_id)
-    except (sqlIntegrityError, sqlPKError):
+    except (sqlIntegrityError, sqlPKError) as e:
+        print('Exception', e)
         db.session.rollback()
         pass
 
