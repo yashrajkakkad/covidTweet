@@ -298,10 +298,11 @@ DECLARE
     flag boolean := FALSE;
 BEGIN
     FOR r_bad_words IN c_bad_words LOOP
-        IF POSITION(r_bad_words.bad_word IN OLD.tweet_text) <> 0 THEN
+        IF POSITION(r_bad_words.bad_word IN NEW.tweet_text) <> 0 THEN
             NEW.possibly_sensitive := TRUE;
             INSERT INTO log
-                VALUES (now(), Format('Tweet %s marked as possibly sensitive', OLD.tweet_id));
+                VALUES (now(), Format('Tweet %s marked as possibly sensitive', NEW.tweet_id));
+            EXIT;
         END IF;
     END LOOP;
     RETURN NEW;
