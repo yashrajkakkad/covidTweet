@@ -200,11 +200,11 @@ scripts %}
                 var heat = L.heatLayer(
                     [
                         {% for res in mean_sentiment_scores_by_location %}
-                            [{{ res[3]}}, {{ res[4]}}, {% if res[2] %}{{ -res[2]+1 }}{% else %} {{ 1 }} {% endif %}],
+                            [{{ res[3]}}, {{ res[4]}}, {{ normalized_mean_sentiment_scores[loop.index] }}],
                         {% endfor %}
                     ],
                     {% raw %}
-                    {radius: 25, maxZoom: 3, max: 2.0}
+                    {radius: 25, maxZoom: 3}
                     {% endraw %}
                 ).addTo(mymap3);
               </script>
