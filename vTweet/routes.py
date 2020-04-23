@@ -191,8 +191,8 @@ def insert():
             if len(status) == 0:
                 raise Exception('No tweet')
             try:
-                # print(type(status))
-                # print(status)
+                print(type(status))
+                print(status)
                 insert_tweets_from_object(status[0])
                 green_message = 'Tweet inserted successfully'
             except Exception:
@@ -204,7 +204,8 @@ def insert():
 
 @app.route('/sentiment')
 def sentiment():
-    db.session.execute('BEGIN; DELETE FROM tweet_word_sentiment; DELETE FROM tweet_word; COMMIT;')
+    db.session.execute(
+        'BEGIN; DELETE FROM tweet_word_sentiment; DELETE FROM tweet_word; COMMIT;')
     # db.session.execute('')
     db.session.execute('CALL remove_special_characters();')
     db.session.execute('CALL calculate_word_score();')
