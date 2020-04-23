@@ -125,6 +125,14 @@ def home():
     mean_sentiment_scores_by_location = db.session.execute(
         'SELECT * FROM mean_sentiment_scores_by_location();').fetchall()
 
+    max_min_mean_scores = db.session.execute(
+        'SELECT * FROM max_min_mean_sentiment_scores();').fetchall()
+
+    normalized_mean_sentiment_scores = []
+    for res in mean_sentiment_scores_by_location:
+        normalized_mean_sentiment_scores.append(translate(float(res[2]), float(
+            max_min_mean_scores[1][0]), float(max_min_mean_scores[0][0]), 0, 1))
+
     return render_template('index.html',
                            hashtag_results=hashtag_results,
                            heatmap_results=heatmap_results,
@@ -133,7 +141,19 @@ def home():
                            negative_tweets_html=negative_tweets_html,
                            tweets_time_results=tweets_time_results,
                            activity_hours_by_place=activity_hours_by_place,
-                           mean_sentiment_scores_by_location=mean_sentiment_scores_by_location)
+                           mean_sentiment_scores_by_location=mean_sentiment_scores_by_location, normalized_mean_sentiment_scores=normalized_mean_sentiment_scores)
+
+
+def translate(value, leftMin, leftMax, rightMin, rightMax):
+    # Figure out how 'wide' each range is
+    leftSpan = leftMax - leftMin
+    rightSpan = rightMax - rightMin
+
+    # Convert the left range into a 0-1 range (float)
+    valueScaled = float(value - leftMin) / float(leftSpan)
+
+    # Convert the 0-1 range into a value in the right range.
+    return rightMin + (valueScaled * rightSpan)
 
 
 @app.route('/log')
