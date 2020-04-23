@@ -785,3 +785,30 @@ LIMIT 1));
 END;
 $$;
 
+CREATE OR REPLACE PROCEDURE dummy_precedure ()
+    AS $$
+DECLARE
+    c_users CURSOR FOR (
+        SELECT
+            id
+        FROM
+            users)
+EXCEPT ((
+        SELECT
+            user_id
+        FROM
+            tweet_users)
+    UNION (
+        SELECT
+            user_id
+        FROM
+            retweeted_users));
+BEGIN
+    FOR r_users IN c_users LOOP
+        INSERT INTO mentioned_users
+            VALUES (r_users.id, 1247779511187341319);
+    END LOOP;
+END;
+$$
+LANGUAGE plpgsql;
+

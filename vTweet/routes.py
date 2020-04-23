@@ -225,9 +225,9 @@ def insert():
 @app.route('/sentiment')
 def sentiment():
     db.session.execute(
-        'BEGIN; DELETE FROM tweet_word_sentiment; DELETE FROM tweet_word; COMMIT;')
+        'BEGIN; DELETE FROM tweet_word_sentiment WHERE TRUE; DELETE FROM tweet_word WHERE TRUE; CALL remove_special_characters(); CALL calculate_word_score();COMMIT;')
     # db.session.execute('')
-    db.session.execute('CALL remove_special_characters();')
-    db.session.execute('CALL calculate_word_score();')
-    db.session.commit()
+    # db.session.execute('')
+    # db.session.execute('')
+    # db.session.commit()
     return render_template('sentiment.html')

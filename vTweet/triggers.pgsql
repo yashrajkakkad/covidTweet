@@ -61,6 +61,7 @@ CREATE TRIGGER tr_log_users
     AFTER INSERT ON users
     FOR EACH ROW
     EXECUTE PROCEDURE log_users ();
+
 CREATE OR REPLACE FUNCTION delete_hashtags ()
     RETURNS TRIGGER
     AS $$
