@@ -727,13 +727,17 @@ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION max_min_mean_sentiment_scores ()
     RETURNS TABLE (
-        mean_scores numeric)
+        mean_scores real)
     LANGUAGE 'plpgsql'
     AS $$
 BEGIN
     RETURN QUERY ((
         SELECT
-            sum(score_sum)
+            (
+                SELECT
+                    (sum(score_sum) / count(*))::real FROM base_tweets
+        WHERE
+            base_tweets.place_id = place)
         FROM (
             SELECT
                 tweet_word_sentiment.tweet_id, sum(tweet_word_sentiment.score) AS score_sum, base_tweets.place_id AS place FROM tweet_word_sentiment, base_tweets
@@ -747,10 +751,18 @@ BEGIN
         HAVING
             sum(tweet_word_sentiment.score) IS NOT NULL ORDER BY sum(tweet_word_sentiment.score)) AS tbl, places
     WHERE
-        places.place_id = place GROUP BY place, places.name, places.latitude, places.longitude ORDER BY sum(score_sum) DESC LIMIT 1)
+        places.place_id = place GROUP BY place, places.name, places.latitude, places.longitude ORDER BY (
+            SELECT
+                (sum(score_sum) / count(*))::real FROM base_tweets
+        WHERE
+            base_tweets.place_id = place) DESC LIMIT 1)
 UNION ALL (
     SELECT
-        sum(score_sum)
+        (
+            SELECT
+                (sum(score_sum) / count(*))::real FROM base_tweets
+    WHERE
+        base_tweets.place_id = place)
     FROM (
         SELECT
             tweet_word_sentiment.tweet_id, sum(tweet_word_sentiment.score) AS score_sum, base_tweets.place_id AS place FROM tweet_word_sentiment, base_tweets
@@ -764,7 +776,11 @@ UNION ALL (
     HAVING
         sum(tweet_word_sentiment.score) IS NOT NULL ORDER BY sum(tweet_word_sentiment.score)) AS tbl, places
 WHERE
-    places.place_id = place GROUP BY place, places.name, places.latitude, places.longitude ORDER BY sum(score_sum)
+    places.place_id = place GROUP BY place, places.name, places.latitude, places.longitude ORDER BY (
+        SELECT
+            (sum(score_sum) / count(*))::real FROM base_tweets
+    WHERE
+        base_tweets.place_id = place)
 LIMIT 1));
 END;
 $$;
