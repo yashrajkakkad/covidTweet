@@ -5,7 +5,7 @@ import tweepy
 
 # Init main Flask app
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://vtweet:vtweet!#%@localhost/vtweet'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://covidtweet:covidtweet!#%@localhost/covidtweet'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 

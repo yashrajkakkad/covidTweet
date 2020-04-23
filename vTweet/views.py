@@ -72,9 +72,13 @@ def insert_tweet_data():
                 status = pickle.load(f)
                 print('Inserting #', count)
                 count += 1
+                print(type(status))
                 insert_tweets_from_object(status)
             except EOFError:
                 return
+            except Exception:
+                retry = input()
+                insert_tweets_from_object(status)
 
 
 def insert_tweets_from_object(tweet):
@@ -199,14 +203,19 @@ def insert_place(json_dict):
     place_id = None
     place = None
     geolocator = Nominatim(user_agent="vtweet", timeout=20)
+    country = None
+    flag = False
     try:
         place_id = json_dict['place']['id']
         name = json_dict['place']['name']
         country = json_dict['place']['country']
         country_code = json_dict['place']['country_code']
         location = geolocator.geocode(name)
+        # try:
         latitude = location.latitude
         longitude = location.longitude
+        # except Exception:
+        #     latitude =
         place = Place(place_id=place_id, name=name,
                       latitude=latitude, longitude=longitude, country_code=country_code)
         country = Country(country_code=country_code, country=country)
@@ -217,22 +226,30 @@ def insert_place(json_dict):
         #     logger.info(type(coordinates))
         # except KeyError:
         #     pass
-        db.session.add(place)
     except (TypeError, AttributeError) as e:
-        print(e)
+        flag = True
         pass
-    try:
-        db.session.commit()
-    except (sqlIntegrityError, sqlPKError) as e:
-        print(e)
-        db.session.rollback()
+    # try:
+    #     db.session.commit()
+    # except (sqlIntegrityError, sqlPKError) as e:
+    #     print(e)
+    #     db.session.rollback()
         # pass
-    db.session.add(country)
-    try:
-        db.session.commit()
-    except (sqlIntegrityError, sqlPKError) as e:
-        db.session.rollback()
-    return place_id
+    if not flag:
+        db.session.add(country)
+        try:
+            db.session.commit()
+        except (sqlIntegrityError, sqlPKError) as e:
+            db.session.rollback()
+        db.session.add(place)
+        try:
+            db.session.commit()
+        except (sqlIntegrityError, sqlPKError) as e:
+            db.session.rollback()
+    if flag:
+        return None
+    else:
+        return place_id
 
 
 # def insert_coordinates(json_dict):
@@ -365,12 +382,18 @@ def insert_mentioned_user(json_dict):
             user_obj = api.get_user(id=id)
         except tweepy.error.TweepError:
             continue
+
         user = User(id=id, id_str=user_obj.id_str, name=user_obj.name, screen_name=user_obj.screen_name,
                     followers_count=user_obj.followers_count,
                     verified=user_obj.verified, profile_image_url_https=user_obj.profile_image_url_https,
                     favourites_count=user_obj.favourites_count)
+
+        mentioned_user = MentionedUser(
+            user_id=id, tweet_id=json_dict['id'])
+
         logger.info(user.id)
         db.session.add(user)
+
         try:
             db.session.commit()
         except (sqlIntegrityError, sqlPKError):

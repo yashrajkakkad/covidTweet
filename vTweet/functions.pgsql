@@ -144,6 +144,7 @@ DECLARE
             places.place_id;
     rec_coordinates RECORD;
     intensity_temp numeric(2, 1);
+    row_temp integer;
 BEGIN
     DELETE FROM intensity;
     OPEN cur_coordinates;
@@ -158,8 +159,17 @@ BEGIN
         ELSE
             intensity_temp := 0.6;
         END IF;
-        INSERT INTO intensity
-            VALUES (rec_coordinates.latitude, rec_coordinates.longitude, intensity_temp);
+        SELECT
+            Count(*) INTO row_temp
+        FROM
+            intensity
+        WHERE
+            latitude = rec_coordinates.latitude
+            AND longitude = rec_coordinates.longitude;
+        IF row_temp = 0 THEN
+            INSERT INTO intensity
+                VALUES (rec_coordinates.latitude, rec_coordinates.longitude, intensity_temp);
+        END IF;
     END LOOP;
     RETURN QUERY (
         SELECT
