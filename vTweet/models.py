@@ -226,6 +226,18 @@ class Database():
             f.write('\n')
             f.write(CreateTable(TBDData.__table__).compile(
                 dialect=postgresql.dialect()).__str__())
+            f.write('\n')
+            f.write(CreateTable(TweetWord.__table__).compile(
+                dialect=postgresql.dialect()).__str__())
+            f.write('\n')
+            f.write(CreateTable(WordSentiment.__table__).compile(
+                dialect=postgresql.dialect()).__str__())
+            f.write('\n')
+            f.write(CreateTable(TweetWordSentiment.__table__).compile(
+                dialect=postgresql.dialect()).__str__())
+            f.write('\n')
+            f.write(CreateTable(BadWord.__table__).compile(
+                dialect=postgresql.dialect()).__str__())
 
 
 if __name__ == "__main__":
