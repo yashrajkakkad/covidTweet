@@ -43,31 +43,58 @@ covidTweet analyses some around 54000 tweets (a drop in the ocean) by fetching, 
 ## Features / Screenshots
 
 ### Heatmap based on number of tweets posted
-![](images/heatmap_loc.gif)
+<center>
+        <img src='https://github.com/yashrajkakkad/covidTweet/blob/master/images/heatmap_loc.gif />
+    </center>
+        
 
 ### Map indicating most active hour of day
-![](images/map_time.gif)
+<center>
+        <img src='https://github.com/yashrajkakkad/covidTweet/blob/master/images/map_time.gif />
+    </center>
+        
 
 ### Heatmap based on mean sentiment score
-![](images/heatmap_sentiment.gif)
+<center>
+        <img src='https://github.com/yashrajkakkad/covidTweet/blob/master/images/heatmap_sentiment.gif />
+    </center>
+        
 
 ### Tweet frequency by time with sentiment
-![](images/tweet_time_sentiment.gif)
+<center>
+        <img src='https://github.com/yashrajkakkad/covidTweet/blob/master/images/tweet_time_sentiment.gif />
+    </center>
+        
 
 ### Most popular hashtags
-![](images/heatmap_loc.gif)
+<center>
+        <img src='https://github.com/yashrajkakkad/covidTweet/blob/master/images/heatmap_loc.gif />
+    </center>
+        
 
 ### Most popular users
-![](images/pop_users.png)
+<center>
+        <img src='https://github.com/yashrajkakkad/covidTweet/blob/master/images/pop_users.png />
+    </center>
+        
 
 ### Most popular tweets
-![](images/pop_tweets.gif)
+<center>
+        <img src='https://github.com/yashrajkakkad/covidTweet/blob/master/images/pop_tweets.gif />
+    </center>
+        
 
 ### Most positive tweets
-![](images/pos_tweet.png)
+<center>
+        <img src='https://github.com/yashrajkakkad/covidTweet/blob/master/images/pos_tweet.png />
+    </center>
+        
 
 ### Most negative tweets
-![](images/neg_tweet.png)
+<center>
+        <img src='https://github.com/yashrajkakkad/covidTweet/blob/master/images/neg_tweet.png />
+    </center>
+        
 
 ### Wordclouds based on frequency of words
 
@@ -108,3 +135,5 @@ The steps can be described as under:
 | [![Yashraj Kakkad](https://avatars0.githubusercontent.com/u/18521104?s=400&u=0b8ff7367cb07eba2014fb5be62cb0d89c38567a&v=4)](https://github.com/yashrajkakkad) | [![Prayag Savsani](https://avatars2.githubusercontent.com/u/44412790?s=400&u=b8e40515644dc045ad5773dd1b6ded812d84d6b9&v=4)](https://github.com/PrayagS)  |
 | ---- | ---- |
 | [Yashraj Kakkad](https://github.com/yashrajkakkad) | [Prayag Savsani](https://github.com/PrayagS) |
+
+
