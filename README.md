@@ -15,9 +15,9 @@
     <a href="#introduction">Introduction</a> •
     <a href="#about-covidTweet">About covidTweet</a> •
     <a href="#technology-stack">Technology Stack</a> •
-    <a href="#features">Features / Screenshots</a> •
-     <a href="#execution-flowchart">Execution Flowchart</a>
-     <a href="entity-relationship-diagram">Entity Relationship Diagram</a>
+    <a href="#features--screenshots">Features / Screenshots</a> •
+     <a href="#execution-flowchart">Execution Flowchart</a> •
+     <a href="#entity-relationship-diagram">Entity Relationship Diagram</a>
   </strong>
 </p>
 
