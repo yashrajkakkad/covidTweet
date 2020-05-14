@@ -83,7 +83,7 @@ covidTweet analyses some around 54000 tweets (a drop in the ocean) by fetching, 
 ## Execution Flowchart
 
 The following flowchart explains our system methodology:
-<img src="images/flowchart_v2.png" align="right" height="500">
+<img src="images/flowchart.png" align="right" height="500">
 
 The steps can be described as under:
 
