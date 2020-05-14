@@ -1,4 +1,25 @@
-# covidTweet - Tweet Analyser for COVID-19
+<h1 align="center">
+  covidTweet
+</h1>
+
+<h3 align="center">
+	Tweet Analyzer for COVID-19
+</h3>
+
+<p align="center">
+	<img src="https://github.com/yashrajkakkad/covidTweet/blob/master/images/cover.png?raw=true">
+</p>
+
+<p align="center">
+  <strong>
+    <a href="#introduction">Introduction</a> •
+    <a href="#about-covidTweet">About covidTweet</a> •
+    <a href="#technology-stack">Technology Stack</a> •
+    <a href="#features">Features / Screenshots</a> •
+     <a href="#execution-flowchart">Execution Flowchart</a>
+     <a href="entity-relationship-diagram">Entity Relationship Diagram</a>
+  </strong>
+</p>
 
 ## Introduction
 
