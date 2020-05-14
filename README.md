@@ -30,13 +30,13 @@ covidTweet analyses some around 54000 tweets (a drop in the ocean) by fetching, 
 ![](images/heatmap_sentiment.gif)
 
 ### Tweet frequency by time with sentiment
-![](images/tweet_time_sentiment.png)
+![](images/tweet_time_sentiment.gif)
 
 ### Most popular hashtags
 ![](images/heatmap_loc.gif)
 
 ### Most popular users
-![](images/pos_users.png)
+![](images/pop_users.png)
 
 ### Most popular tweets
 ![](images/pop_tweets.gif)
