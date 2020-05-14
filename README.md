@@ -80,14 +80,9 @@ covidTweet analyses some around 54000 tweets (a drop in the ocean) by fetching, 
 #### Negative tweets
 ![](vTweet/static/images/neg_cloud.png)
 
-
 ## Execution Flowchart
 
-The following flowchart explains our system methodology:
-
-The steps can be described as under:
-
-![flowchart](images/flowchart.png)
+<img src="images/flowchart.png" align="right" height="450">
 
 - Twitter Search API’s free edition misses out on a lot of tweets. Also, it is slow for our purposes. Therefore, we need a list of tweet ids which we can fetch using the Twitter Lookup API. Thankfully, IEEE Dataport has published [a dataset](https://ieee-dataport.org/open-access/corona-virus-covid-19-tweets-dataset) of tweets related to COVID-19, which we use. We take ~50,000 tweets from April 8th 2020’s data which is large enough to show trends and small enough to not break things down.
 - We fetch the tweets and serialize them in a binary file. Tweets can be fetched by sending HTTP requests to their server with our API key and secret code. We use Tweepy to make things easier. 
