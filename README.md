@@ -10,16 +10,17 @@
 	<img src="https://github.com/yashrajkakkad/covidTweet/blob/master/images/cover.png?raw=true">
 </p>
 
-<p align="center">
-  <strong>
-    <a href="#introduction">Introduction</a> •
-    <a href="#about-covidTweet">About covidTweet</a> •
-    <a href="#technology-stack">Technology Stack</a> •
-    <a href="#features--screenshots">Features / Screenshots</a> •
-     <a href="#execution-flowchart">Execution Flowchart</a> •
-     <a href="#entity-relationship-diagram">Entity Relationship Diagram</a>
-  </strong>
-</p>
+---
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [About covidTweet](#about-covidTweet)
+- [Technology Stack](#technology-stack)
+- [Features / Screenshots](#features--screenshots)
+- [Execution Flowchart](#execution-flowchart)
+- [Entity Relationship Diagram](#entity-relationship-diagram)
+- [Contributors](#contributors)
 
 ## Introduction
 
@@ -107,4 +108,3 @@ The steps can be described as under:
 | [![Yashraj Kakkad](https://avatars0.githubusercontent.com/u/18521104?s=400&u=0b8ff7367cb07eba2014fb5be62cb0d89c38567a&v=4)](https://github.com/yashrajkakkad) | [![Prayag Savsani](https://avatars2.githubusercontent.com/u/44412790?s=400&u=b8e40515644dc045ad5773dd1b6ded812d84d6b9&v=4)](https://github.com/PrayagS)  |
 | ---- | ---- |
 | [Yashraj Kakkad](https://github.com/yashrajkakkad) | [Prayag Savsani](https://github.com/PrayagS) |
-
