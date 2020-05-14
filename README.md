@@ -98,8 +98,9 @@ The steps can be described as under:
 
 
 ## Entity Relationship Diagram
-
-
+<h3 align="center">
+  <img src="https://github.com/yashrajkakkad/covidTweet/blob/master/images/er.png?raw=true">
+</h3>
 
 ## Contributors
 
