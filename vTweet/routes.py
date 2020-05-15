@@ -52,6 +52,8 @@ def home():
         r = requests.get('https://publish.twitter.com/oembed', params={
             'url': 'https://twitter.com/{}/status/{}'.format(res[1], res[0])
         })
+        if r.status_code == 404:
+            continue
         # print(type(r))
         # print(r.json())
         try:
@@ -83,9 +85,12 @@ def home():
         r = requests.get('https://publish.twitter.com/oembed', params={
             'url': 'https://twitter.com/{}/status/{}'.format(res[1], res[0])
         })
+        if r.status_code == 404:
+            continue
         # print(type(r))
         # print(r.json())
         try:
+            print(r)
             positive_tweets_html.append(r.json()['html'].replace(
                 'twitter-tweet', 'twitter-tweet tw-align-center'))
         except KeyError:  # Some accounts have gone private now. Can be made into a trigger possibly
@@ -100,6 +105,8 @@ def home():
         r = requests.get('https://publish.twitter.com/oembed', params={
             'url': 'https://twitter.com/{}/status/{}'.format(res[1], res[0])
         })
+        if r.status_code == 404:
+            continue
         # print(type(r))
         # print(r.json())
         try:
